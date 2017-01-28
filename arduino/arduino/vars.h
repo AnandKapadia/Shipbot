@@ -10,6 +10,11 @@
 #include <stdio.h>
 
 /**
+ * Pinnumber for _______
+ */
+#define PIN_WRITEDESCRIP_HERE 0
+
+/**
  * @brief State to define the current robot system function/task
  */
 typedef enum {

@@ -9,7 +9,9 @@
 #include "state.h"
 #include "serial.h"
 #include "localize.h"
-#include <"pathplan.h"> 
+#include "pathplan.h"
+#include "armmotion.h"
+#include "robotmotion.h"
 
 /**
  * @brief      Setup and Initialize all pins, firmware, etc.

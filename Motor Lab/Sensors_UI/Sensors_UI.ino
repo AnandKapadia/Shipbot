@@ -61,16 +61,31 @@ void drive_dc() {
 }
 
 void drive_servo() {
+  int pos;
   switch (sensor_sel) {
-    case 1: sensor_val = map(sensor_val, 0, 50, 0, 360); break;
-    case 2: sensor_val = map(sensor_val, 0, 50, 0, 360); break;
-    case 3: sensor_val = map(sensor_val, 0, 100, 0, 360); break;
+    case 1: sensor_val = map(sensor_val, 0, 50, 0, 180); break;
+    case 2: sensor_val = map(sensor_val, 0, 50, 0, 180); break;
+    case 3: sensor_val = map(sensor_val, 0, 100, 0, 180); break;
+    case 4: sensor_val = map(sensor_val, 0,360, 0, 180); break;
     default: break;
   }
-  target = (int)(800.0 * ((float)sensor_val / 360.0));
-  target = target/2;
-  myservo.write(target);                  // sets the servo position according to the scaled value
-  delay(15);                           // waits for the servo to get there
+  if (rev_sel==0)
+  {  
+    for (pos = 0; pos <= 180; pos += 1) 
+    {                   // goes from 0 degrees to 180 degrees in steps of 1 degree
+        myservo.write(pos);              // tell servo to go to position in variable 'pos'
+        delay(15);                       // waits 15ms for the servo to reach the position
+    }  
+    for (pos = 180; pos >= 0; pos -= 1) 
+    {                   // goes from 180 degrees to 0 degrees
+        myservo.write(pos);              // tell servo to go to position in variable 'pos'
+        delay(15);                       // waits 15ms for the servo to reach the position
+    }
+  }
+  else if (rev_sel==-1)
+  {
+    myservo.write(sensor_val);
+  }                         // waits for the servo to get there
 }
 
 

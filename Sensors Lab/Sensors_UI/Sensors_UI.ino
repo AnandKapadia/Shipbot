@@ -61,7 +61,7 @@ void loop() {
   //increment idx for data store
   circular_idx = (circular_idx + 1)%BUF_SIZE;
   
-
+  //potentiometer
   Serial.print("Potentiometer: ");
   raw = analogRead(POT_PIN);
   //scale from 0-5V (0 - 1023) to a percentage

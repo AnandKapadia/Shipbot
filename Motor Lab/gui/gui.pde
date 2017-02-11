@@ -16,7 +16,7 @@ PImage img;
 //motor selector
 String[] motors = {"dc", "servo", "stepper"};
 //sensor selector
-String[] sensors = {"pot", "ultrasonic", "sharp", "gui"};
+String[] sensors = {"sharp", "ultrasonic", "pot", "gui"};
 //output selector
 String[] output = {"deg", "vel"};
 //values
@@ -96,13 +96,6 @@ void setup() {
     .setRadius(20)
     .setDragDirection(Knob.VERTICAL)
     ;
-    //tell arduino to start sending data
-  myPort.write('z');
-  myPort.write('\n');  //tell arduino to start sending data
-  myPort.write('z');
-  myPort.write('\n');  //tell arduino to start sending data
-  myPort.write('z');
-  myPort.write('\n');
 }
 
 void draw() {
@@ -138,7 +131,7 @@ void readVals() {
     //print(ultrasonic);
     //print(pot);
     //print(serial_val);
-    println(serial_mode);
+    //println(serial_mode);
   }
 }
 
@@ -149,6 +142,7 @@ void motorButton(int a) {
   for(int i = 0; i < chars.length; i++){
     myPort.write(chars[i]);
   }
+  myPort.write('\n');
 }
 void outputButton(int a) {
   println("o"+a);
@@ -157,6 +151,7 @@ void outputButton(int a) {
   for(int i = 0; i < chars.length; i++){
     myPort.write(chars[i]);
   }
+  myPort.write('\n');
 }
 
 void sensorButton(int a) {
@@ -166,6 +161,7 @@ void sensorButton(int a) {
   for(int i = 0; i < chars.length; i++){
     myPort.write(chars[i]);
   }
+  myPort.write('\n');
 }
 
 void checkBox(int a) {
@@ -175,6 +171,7 @@ void checkBox(int a) {
   for(int i = 0; i < chars.length; i++){
     myPort.write(chars[i]);
   }
+  myPort.write('\n');
 }
 
 void deGrees(int a) {
@@ -184,6 +181,7 @@ void deGrees(int a) {
   for(int i = 0; i < chars.length; i++){
     myPort.write(chars[i]);
   }
+  myPort.write('\n');
 }
 
 void velocity(int a) {
@@ -193,4 +191,5 @@ void velocity(int a) {
   for(int i = 0; i < chars.length; i++){
     myPort.write(chars[i]);
   }
+  myPort.write('\n');
 }

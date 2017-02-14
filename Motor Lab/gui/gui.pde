@@ -31,7 +31,7 @@ void setup() {
   size(640, 200);
   //init serial
   portName = "/dev/cu.usbmodem1411";
-  myPort = new Serial(this, portName, 9600);
+  //myPort = new Serial(this, portName, 9600);
   //set background
   img = loadImage("motor.jpg");
   f = createFont("Arial", 12, true);
@@ -102,7 +102,7 @@ void draw() {
 
   background(img);
   //read serial
-  readVals();
+  //readVals();
   //draw black square around text
   fill(gray);
   rect(400, h_base, 150, 100, 7);

@@ -20,7 +20,7 @@ String[] sensors = {"sharp", "ultrasonic", "pot", "gui"};
 //output selector
 String[] output = {"deg", "vel"};
 //values
-int sharp = 0, ultrasonic = 0, pot = 0;
+int sharp = 0, ultrasonic = 0, pot = 0, motorv = 0, motorp = 0;
 //gui control
 ControlP5 cp5;
 RadioButton m, s, o, c;
@@ -31,7 +31,7 @@ void setup() {
   size(640, 200);
   //init serial
   portName = "/dev/cu.usbmodem1411";
-  //myPort = new Serial(this, portName, 9600);
+  myPort = new Serial(this, portName, 9600);
   //set background
   img = loadImage("motor.jpg");
   f = createFont("Arial", 12, true);
@@ -110,7 +110,9 @@ void draw() {
   fill(white);
   text("Sensor Values: \n  Sharp: " + Integer.toString(sharp) + "cm" +
     "\n  Ultrasonic: "+ Integer.toString(ultrasonic) + "cm" +
-    "\n  Potentiometer: " + Integer.toString(pot) + "%\n", 420, h_base + 20);
+    "\n  Potentiometer: " + Integer.toString(pot) + "%\n" + 
+    "\n  Motor Offset from Target: " + Integer.toString(motorp) + " degrees\n" + 
+    "\n  Motor Vel: " + Integer.toString(motorv) + " rpm\n", 420, h_base + 20);
 }
 
 void readVals() {
@@ -126,6 +128,10 @@ void readVals() {
       ultrasonic = Integer.parseInt(serial_val);
     } else if (serial_mode.equals("pot\n")) {
       pot = Integer.parseInt(serial_val);
+    }else if (serial_mode.equals("motorp\n")) {
+      motorp = Integer.parseInt(serial_val);
+    }else if (serial_mode.equals("motorv\n")) {
+      motorv = Integer.parseInt(serial_val);
     }
     //print(sharp);
     //print(ultrasonic);

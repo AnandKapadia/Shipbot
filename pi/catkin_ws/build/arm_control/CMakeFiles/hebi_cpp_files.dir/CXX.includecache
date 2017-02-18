@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/kaveh/Documents/Shipbot/pi/catkin_ws/src/arm_control/src/group.cpp
+group.hpp
+/home/kaveh/Documents/Shipbot/pi/catkin_ws/src/arm_control/src/group.hpp
+hebi_lookup.h
+/home/kaveh/Documents/Shipbot/pi/catkin_ws/src/arm_control/src/hebi_lookup.h
+
+/home/kaveh/Documents/Shipbot/pi/catkin_ws/src/arm_control/src/module.cpp
+module.hpp
+/home/kaveh/Documents/Shipbot/pi/catkin_ws/src/arm_control/src/module.hpp
+hebi_lookup.h
+/home/kaveh/Documents/Shipbot/pi/catkin_ws/src/arm_control/src/hebi_lookup.h
+

@@ -1,0 +1,8 @@
+prefix=/home/kaveh/Documents/Shipbot/pi/catkin_ws/devel
+
+Name: arm_control
+Description: Description of arm_control
+Version: 1.0.0
+Cflags: -I/home/kaveh/Documents/Shipbot/pi/catkin_ws/src/arm_control/include
+Libs: -L/home/kaveh/Documents/Shipbot/pi/catkin_ws/devel/lib 
+Requires: geometry_msgs roscpp rospy std_msgs

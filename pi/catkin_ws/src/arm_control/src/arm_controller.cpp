@@ -54,7 +54,7 @@ Eigen::Matrix4d rotationZ(const double &alpha){
 //for Team D in mechatronics uses
 class armController{
 private:
-	Eigen::Matrix4d H1o2i, H2o3i, H3o4i, H4o5i, H5o6i, g1i6;
+	Eigen::Matrix4d H1o2i, H2o3i, H3o4i, H4o5i, H5o6i;
 	std::vector<std::unique_ptr<hebi::Module>> vec_module;
   	std::vector<std::string> moduleAddress;
   	int numModules;
@@ -165,33 +165,31 @@ void armController::initialize(){
 
 //Function:: Calculate the forward kinematics of the arm in the lab
 void armController::forwardKinematics(const std::vector<double> &alpha){
-	g1i6 = rotationZ(alpha[0]) * H1o2i*
+	Eigen::Matrix4d g1i6 = rotationZ(alpha[0]) * H1o2i*
 						   rotationZ(alpha[1])* H2o3i*
 						   rotationZ(alpha[2])* H3o4i*
 						   rotationZ(alpha[3])* H4o5i;
 
  
-    std::cout << "Endeffector w.r.t arm base is : \n" << g1i6 << std::endl;
+    std::cout << "\nEndeffector w.r.t arm base is : \n" << g1i6 << std::endl;
 }
 
 //Function:: Calculate the Inverse Kinematics of the arm in the lab
 bool armController::inverseKinematics(const geometry_msgs::Pose &pose, std::vector<double> &alpha){
 	Eigen::Quaternion<double> q(pose.orientation.w, pose.orientation.x, pose.orientation.y, pose.orientation.z);
-	Eigen::Matrix4d g1i6_t;
-    g1i6_t.setIdentity();
-    //g1i6.block(0, 0, 3, 3) << q.matrix();
-    g1i6_t.block(0, 0, 3, 3) << g1i6.block(0, 0, 3, 3);
-    //g1i6.block(0, 3, 3, 1) << pose.position.x, pose.position.y, pose.position.z;
-    g1i6_t.block(0, 3, 3,1) << g1i6.block(0, 3, 3, 1); 
-    std::cout << "desired end-effector pose:" << std::endl << g1i6_t << std::endl;	
+	Eigen::Matrix4d g1i6;
+    g1i6.setIdentity();
+    g1i6.block(0, 0, 3, 3) << q.matrix();
+    g1i6.block(0, 3, 3, 1) << pose.position.x, pose.position.y, pose.position.z;
+    std::cout << "desired end-effector pose:" << std::endl << g1i6 << std::endl;	
 
     //Solve for base angle. Set condition that if angle is greater  that PI
     //arm should got to negative values.
 
     //offset to apply to radius to get actual angle 0
-    double offset_angle = asin(y1 / sqrt(g1i6_t(0, 3) * g1i6_t(0, 3) + g1i6_t(1, 3) *g1i6_t(1, 3)));
-    std::cout << "offset angle is : " << offset_angle << std::endl;
-    alpha[0] = atan2(g1i6_t(1, 3), g1i6_t(0, 3)) + offset_angle;
+    double offset_angle = asin(y1 / sqrt(g1i6(0, 3) * g1i6(0, 3) + g1i6(1, 3) *g1i6(1, 3)));
+    //std::cout << "offset angle is : " << offset_angle << std::endl;
+    alpha[0] = atan2(g1i6(1, 3), g1i6(0, 3)) + offset_angle;
 	    alpha[0] += PI;
 	    if (alpha[0] >PI){
 	    	alpha[0] = alpha[0] - 2*PI;
@@ -199,14 +197,14 @@ bool armController::inverseKinematics(const geometry_msgs::Pose &pose, std::vect
 
     //Solve for elevation and reach of 4th joint w.r.t base joint
     Eigen::Matrix4d g4o6 = H4o5i * rotationZ(alpha[4]) * H5o6i;
-    Eigen::Matrix4d g1i4o = g1i6_t * g4o6.inverse();
+    Eigen::Matrix4d g1i4o = g1i6 * g4o6.inverse();
     Eigen::Matrix4d g1i2i = rotationZ(alpha[0]) * H1o2i;
     Eigen::Matrix4d g2i4o = g1i2i.inverse() * g1i4o;
     double elevation = g2i4o(1, 3), reach = fabs(g2i4o(0, 3));
 
 
-    std::cout << " wrist elevation is : " << elevation << std::endl;
-    std::cout << " wrist reach is : " << reach << std::endl;
+    //std::cout << " wrist elevation is : " << elevation << std::endl;
+    //std::cout << " wrist reach is : " << reach << std::endl;
 
     //use law of cosines to find angle 2
     double L1 = fabs(y2); double L2 = fabs(x3);
@@ -220,14 +218,14 @@ bool armController::inverseKinematics(const geometry_msgs::Pose &pose, std::vect
     double beta = asin(L2 / L3 * sin(alpha[2]));
     alpha[1] = atan2(reach,elevation) + beta;
     
-    std::cout << asin(g1i6_t(2,2)) <<std::endl;
-    if (g1i6_t(0,2) > 0){
-    	alpha[3] =PI - alpha[1] + alpha[2]- (-PI/2 -asin(g1i6_t(2,2)));
+    if (g1i6(0,2) > 0){
+    	alpha[3] =PI - alpha[1] + alpha[2]- (-PI/2 -asin(g1i6(2,2)));
     }
     else{
-    	alpha[3] =PI - alpha[1] + alpha[2] + (-PI/2 -asin(g1i6_t(2,2)));
+    	alpha[3] =PI - alpha[1] + alpha[2] + (-PI/2 -asin(g1i6(2,2)));
     } 
 
+    std::cout << "Joint angles as determined from Inverse Kinematics:" << std::endl;
     std::cout << " angle 1 is : " << alpha[0] << std::endl;
     std::cout << " angle 2 is : " << alpha[1] << std::endl;
 	std::cout << " angle 3 is : " << alpha[2] << std::endl;  
@@ -242,12 +240,12 @@ bool armController::inverseKinematics(const geometry_msgs::Pose &pose, std::vect
 		return false;
 	}
 	//Check to ensure that the desired position is reachable
-	else if (sqrt(g1i6(3,0)*g1i6(3,0)+ g1i6(3,1)*g1i6(3,1)+g1i6(3,2)*g1i6(3,2))> L1+L2+z1 ||
-		sqrt(g1i6(3,0)*g1i6(3,0)+ g1i6(3,1)*g1i6(3,1)+g1i6(3,2)*g1i6(3,2))< fabs(L1-L2)){
+	else if (L1 + L2 < L3)
+		{	
 		std::cout << "The desired position is outside the workspace" << std::endl;
 		return false;
-	}
-	else if(g1i6(0,2) < .01){
+		}
+	else if(g1i6(0,3) < .01){
 		std::cout <<"The desired position is will cause collision with base" << std::endl;
 	}
 	else{
@@ -257,9 +255,9 @@ bool armController::inverseKinematics(const geometry_msgs::Pose &pose, std::vect
 void armController::sendCommand(const std::vector<double> &command){
 hebi::Command cmd;
     bool bSuccess = true;
-    for(uint j = 0; j < 5; j++){
+    for(uint j = 0; j < 4; j++){
           cmd.actuator().position().set(command[j]); 
-          //printf("send command to joint %d with angle %f rad \n", j, command[j]);
+          printf("send command to joint %d with angle %f rad \n", j, command[j]);
           if(!vec_module[j]->sendCommandWithAcknowledgement(cmd, timeout_ms)){
              bSuccess = false;
             printf("Did not receive acknowledgement from %d!\n",j);
@@ -312,16 +310,16 @@ int main(int argc, char* argv[]){
 	pose.orientation.x = 1;
 	pose.orientation.y = 0;
 	pose.orientation.z = 0;
-	pose.position.x =  -.7138;
-	pose.position.y = -0.0685;
-	pose.position.z = -0.0119;
+	pose.position.x =  -.4600;
+	pose.position.y = -0.06;
+	pose.position.z = 0.2;
 
 
 	bool success;
 	ros::init(argc, argv, "arm_control");
 	ros::NodeHandle nh;
-	ros::Rate loop_rate(0.5);
-
+	ros::Rate loop_rate(10);
+	int state = 1;
 
 	armController ac;
 	ac.initialize();
@@ -329,12 +327,32 @@ int main(int argc, char* argv[]){
 	while (ros::ok()){
 
 		ac.getFeedback(fbk_position,1);
-		ac.forwardKinematics(fbk_position);
 
-		success = ac.inverseKinematics(pose,alpha);
-
-
+		if (state >= 1 && state < 20){
+				pose.position.x =  -.4600;
+				pose.position.y = -0.06;
+				pose.position.z = 0.2;
+			success = ac.inverseKinematics(pose,alpha);
+			ac.sendCommand(alpha);
+		}
+		else if (state >= 20 && state < 40)
+		{	
+			pose.position.x =  -.4600;
+			pose.position.y = -0.06;
+			pose.position.z = .1;
+			success = ac.inverseKinematics(pose,alpha);
+			ac.sendCommand(alpha);
+		}
+		else {
+			pose.position.x = -.2;
+			pose.position.y = -.2;
+			pose.position.z = .15;
+			success = ac.inverseKinematics(pose,alpha);
+			ac.sendCommand(alpha);
+		}
+		std::cout << "state is : "<< state <<std::endl;
 		loop_rate.sleep();
+		state++;
 	}
   	return 0;
 }

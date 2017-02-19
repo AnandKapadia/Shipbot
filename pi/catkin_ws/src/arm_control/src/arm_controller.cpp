@@ -3,7 +3,6 @@
 #include <iostream>
 #include <eigen3/Eigen/Eigen>
 #include <eigen3/Eigen/Geometry>
-#include "eigen3/Eigen/src/SVD/JacobiSVD.h"
 #include <vector>
 #include <math.h>
 #include "lookup.hpp"
@@ -58,6 +57,7 @@ private:
 	Eigen::Matrix4d H1o2i, H2o3i, H3o4i, H4o5i, H5o6i, g1i6;
 	std::vector<std::unique_ptr<hebi::Module>> vec_module;
   	std::vector<std::string> moduleAddress;
+  	int numModules;
   	long timeout_ms = 20;
 
   	double x1,x2,x3,x4,x5,x6;
@@ -70,7 +70,8 @@ public:
 	void initialize();
 	void forwardKinematics(const std::vector<double> &alpha);
 	bool inverseKinematics(const geometry_msgs::Pose &pose, std::vector<double> &alpha);
-	bool sendCommand(const std::vector<double> &command);
+	void sendCommand(const std::vector<double> &command);
+	bool execute(); //future implementation trajectory map
 	bool getFeedback(std::vector<double> &fbk,const int type);
 };
 
@@ -78,6 +79,8 @@ armController::armController(){
 
 	//Initialize transformation matrices using the home position of the (arms facing up)
 	Eigen::Matrix4d T1o2i, T2o3i, T3o4i, T4o5i, T5o6i;
+
+	numModules = 5;
 
 	//Cartesian offsets of each transformation in meters
 	x1 = 0 ;    y1 =-0.102	  ; z1 = 0.067;
@@ -225,10 +228,6 @@ bool armController::inverseKinematics(const geometry_msgs::Pose &pose, std::vect
     	alpha[3] =PI - alpha[1] + alpha[2] + (-PI/2 -asin(g1i6_t(2,2)));
     } 
 
-
-
-    //alpha[3] = M_PI - alpha[1] + alpha[2];
-
     std::cout << " angle 1 is : " << alpha[0] << std::endl;
     std::cout << " angle 2 is : " << alpha[1] << std::endl;
 	std::cout << " angle 3 is : " << alpha[2] << std::endl;  
@@ -236,11 +235,40 @@ bool armController::inverseKinematics(const geometry_msgs::Pose &pose, std::vect
 	//std::cout << " angle 4 is : " << alpha[3] << std::endl; 
 
 
-
-
-    return false;
+	//Check to ensure joint 1 is within limits
+	if (alpha[0] >= PI || alpha[0] <= -PI) //singularity point
+	{
+		std::cout << "joint 1 falls outside safe limits" << std::endl;
+		return false;
+	}
+	//Check to ensure that the desired position is reachable
+	else if (sqrt(g1i6(3,0)*g1i6(3,0)+ g1i6(3,1)*g1i6(3,1)+g1i6(3,2)*g1i6(3,2))> L1+L2+z1 ||
+		sqrt(g1i6(3,0)*g1i6(3,0)+ g1i6(3,1)*g1i6(3,1)+g1i6(3,2)*g1i6(3,2))< fabs(L1-L2)){
+		std::cout << "The desired position is outside the workspace" << std::endl;
+		return false;
+	}
+	else if(g1i6(0,2) < .01){
+		std::cout <<"The desired position is will cause collision with base" << std::endl;
+	}
+	else{
+	    return true;
+	}
 }
-
+void armController::sendCommand(const std::vector<double> &command){
+hebi::Command cmd;
+    bool bSuccess = true;
+    for(uint j = 0; j < 5; j++){
+          cmd.actuator().position().set(command[j]); 
+          //printf("send command to joint %d with angle %f rad \n", j, command[j]);
+          if(!vec_module[j]->sendCommandWithAcknowledgement(cmd, timeout_ms)){
+             bSuccess = false;
+            printf("Did not receive acknowledgement from %d!\n",j);
+          }
+          else{
+          //printf("Got acknowledgement.\n");
+          }
+    }
+ }
 
 bool armController::getFeedback(std::vector<double> &fbk,const int type){
   	hebi::Feedback feedback;
@@ -264,18 +292,15 @@ bool armController::getFeedback(std::vector<double> &fbk,const int type){
   		  }
           else{
             bSuccess = false;
+          }
         }
         if (bSuccess == false){
         printf("\nFeedback not recieved successfully module.\n");
         hebi_sleep_ms(timeout_ms);
     	}
-  	
-    }
+    	
   	return bSuccess;
-}
-
-
-
+  }
 
 int main(int argc, char* argv[]){
 
@@ -297,6 +322,7 @@ int main(int argc, char* argv[]){
 	ros::NodeHandle nh;
 	ros::Rate loop_rate(0.5);
 
+
 	armController ac;
 	ac.initialize();
 
@@ -306,10 +332,6 @@ int main(int argc, char* argv[]){
 		ac.forwardKinematics(fbk_position);
 
 		success = ac.inverseKinematics(pose,alpha);
-
-
-
-
 
 
 		loop_rate.sleep();

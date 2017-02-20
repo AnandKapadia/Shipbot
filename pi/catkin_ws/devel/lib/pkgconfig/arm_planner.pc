@@ -1,0 +1,8 @@
+prefix=/home/kaveh/Documents/Shipbot/pi/catkin_ws/devel
+
+Name: arm_planner
+Description: Description of arm_planner
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/kaveh/Documents/Shipbot/pi/catkin_ws/devel/lib 
+Requires: roscpp rospy std_msgs geometry_msgs

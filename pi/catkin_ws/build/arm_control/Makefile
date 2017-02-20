@@ -164,48 +164,6 @@ arm_controller/fast:
 .PHONY : arm_controller/fast
 
 # Convenience name for target.
-arm_control/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/rule:
-	cd /home/kaveh/Documents/Shipbot/pi/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 arm_control/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/rule
-.PHONY : arm_control/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/rule
-
-# Convenience name for target.
-geometry_msgs_generate_messages_cpp: arm_control/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/rule
-.PHONY : geometry_msgs_generate_messages_cpp
-
-# fast build rule for target.
-geometry_msgs_generate_messages_cpp/fast:
-	cd /home/kaveh/Documents/Shipbot/pi/catkin_ws/build && $(MAKE) -f arm_control/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/build.make arm_control/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/build
-.PHONY : geometry_msgs_generate_messages_cpp/fast
-
-# Convenience name for target.
-arm_control/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/rule:
-	cd /home/kaveh/Documents/Shipbot/pi/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 arm_control/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/rule
-.PHONY : arm_control/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/rule
-
-# Convenience name for target.
-geometry_msgs_generate_messages_lisp: arm_control/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/rule
-.PHONY : geometry_msgs_generate_messages_lisp
-
-# fast build rule for target.
-geometry_msgs_generate_messages_lisp/fast:
-	cd /home/kaveh/Documents/Shipbot/pi/catkin_ws/build && $(MAKE) -f arm_control/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/build.make arm_control/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/build
-.PHONY : geometry_msgs_generate_messages_lisp/fast
-
-# Convenience name for target.
-arm_control/CMakeFiles/geometry_msgs_generate_messages_py.dir/rule:
-	cd /home/kaveh/Documents/Shipbot/pi/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 arm_control/CMakeFiles/geometry_msgs_generate_messages_py.dir/rule
-.PHONY : arm_control/CMakeFiles/geometry_msgs_generate_messages_py.dir/rule
-
-# Convenience name for target.
-geometry_msgs_generate_messages_py: arm_control/CMakeFiles/geometry_msgs_generate_messages_py.dir/rule
-.PHONY : geometry_msgs_generate_messages_py
-
-# fast build rule for target.
-geometry_msgs_generate_messages_py/fast:
-	cd /home/kaveh/Documents/Shipbot/pi/catkin_ws/build && $(MAKE) -f arm_control/CMakeFiles/geometry_msgs_generate_messages_py.dir/build.make arm_control/CMakeFiles/geometry_msgs_generate_messages_py.dir/build
-.PHONY : geometry_msgs_generate_messages_py/fast
-
-# Convenience name for target.
 arm_control/CMakeFiles/hebi_cpp_files.dir/rule:
 	cd /home/kaveh/Documents/Shipbot/pi/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 arm_control/CMakeFiles/hebi_cpp_files.dir/rule
 .PHONY : arm_control/CMakeFiles/hebi_cpp_files.dir/rule
@@ -218,132 +176,6 @@ hebi_cpp_files: arm_control/CMakeFiles/hebi_cpp_files.dir/rule
 hebi_cpp_files/fast:
 	cd /home/kaveh/Documents/Shipbot/pi/catkin_ws/build && $(MAKE) -f arm_control/CMakeFiles/hebi_cpp_files.dir/build.make arm_control/CMakeFiles/hebi_cpp_files.dir/build
 .PHONY : hebi_cpp_files/fast
-
-# Convenience name for target.
-arm_control/CMakeFiles/roscpp_generate_messages_cpp.dir/rule:
-	cd /home/kaveh/Documents/Shipbot/pi/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 arm_control/CMakeFiles/roscpp_generate_messages_cpp.dir/rule
-.PHONY : arm_control/CMakeFiles/roscpp_generate_messages_cpp.dir/rule
-
-# Convenience name for target.
-roscpp_generate_messages_cpp: arm_control/CMakeFiles/roscpp_generate_messages_cpp.dir/rule
-.PHONY : roscpp_generate_messages_cpp
-
-# fast build rule for target.
-roscpp_generate_messages_cpp/fast:
-	cd /home/kaveh/Documents/Shipbot/pi/catkin_ws/build && $(MAKE) -f arm_control/CMakeFiles/roscpp_generate_messages_cpp.dir/build.make arm_control/CMakeFiles/roscpp_generate_messages_cpp.dir/build
-.PHONY : roscpp_generate_messages_cpp/fast
-
-# Convenience name for target.
-arm_control/CMakeFiles/roscpp_generate_messages_lisp.dir/rule:
-	cd /home/kaveh/Documents/Shipbot/pi/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 arm_control/CMakeFiles/roscpp_generate_messages_lisp.dir/rule
-.PHONY : arm_control/CMakeFiles/roscpp_generate_messages_lisp.dir/rule
-
-# Convenience name for target.
-roscpp_generate_messages_lisp: arm_control/CMakeFiles/roscpp_generate_messages_lisp.dir/rule
-.PHONY : roscpp_generate_messages_lisp
-
-# fast build rule for target.
-roscpp_generate_messages_lisp/fast:
-	cd /home/kaveh/Documents/Shipbot/pi/catkin_ws/build && $(MAKE) -f arm_control/CMakeFiles/roscpp_generate_messages_lisp.dir/build.make arm_control/CMakeFiles/roscpp_generate_messages_lisp.dir/build
-.PHONY : roscpp_generate_messages_lisp/fast
-
-# Convenience name for target.
-arm_control/CMakeFiles/roscpp_generate_messages_py.dir/rule:
-	cd /home/kaveh/Documents/Shipbot/pi/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 arm_control/CMakeFiles/roscpp_generate_messages_py.dir/rule
-.PHONY : arm_control/CMakeFiles/roscpp_generate_messages_py.dir/rule
-
-# Convenience name for target.
-roscpp_generate_messages_py: arm_control/CMakeFiles/roscpp_generate_messages_py.dir/rule
-.PHONY : roscpp_generate_messages_py
-
-# fast build rule for target.
-roscpp_generate_messages_py/fast:
-	cd /home/kaveh/Documents/Shipbot/pi/catkin_ws/build && $(MAKE) -f arm_control/CMakeFiles/roscpp_generate_messages_py.dir/build.make arm_control/CMakeFiles/roscpp_generate_messages_py.dir/build
-.PHONY : roscpp_generate_messages_py/fast
-
-# Convenience name for target.
-arm_control/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/rule:
-	cd /home/kaveh/Documents/Shipbot/pi/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 arm_control/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/rule
-.PHONY : arm_control/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/rule
-
-# Convenience name for target.
-rosgraph_msgs_generate_messages_cpp: arm_control/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/rule
-.PHONY : rosgraph_msgs_generate_messages_cpp
-
-# fast build rule for target.
-rosgraph_msgs_generate_messages_cpp/fast:
-	cd /home/kaveh/Documents/Shipbot/pi/catkin_ws/build && $(MAKE) -f arm_control/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build.make arm_control/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build
-.PHONY : rosgraph_msgs_generate_messages_cpp/fast
-
-# Convenience name for target.
-arm_control/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/rule:
-	cd /home/kaveh/Documents/Shipbot/pi/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 arm_control/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/rule
-.PHONY : arm_control/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/rule
-
-# Convenience name for target.
-rosgraph_msgs_generate_messages_lisp: arm_control/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/rule
-.PHONY : rosgraph_msgs_generate_messages_lisp
-
-# fast build rule for target.
-rosgraph_msgs_generate_messages_lisp/fast:
-	cd /home/kaveh/Documents/Shipbot/pi/catkin_ws/build && $(MAKE) -f arm_control/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build.make arm_control/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build
-.PHONY : rosgraph_msgs_generate_messages_lisp/fast
-
-# Convenience name for target.
-arm_control/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule:
-	cd /home/kaveh/Documents/Shipbot/pi/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 arm_control/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule
-.PHONY : arm_control/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule
-
-# Convenience name for target.
-rosgraph_msgs_generate_messages_py: arm_control/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule
-.PHONY : rosgraph_msgs_generate_messages_py
-
-# fast build rule for target.
-rosgraph_msgs_generate_messages_py/fast:
-	cd /home/kaveh/Documents/Shipbot/pi/catkin_ws/build && $(MAKE) -f arm_control/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build.make arm_control/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build
-.PHONY : rosgraph_msgs_generate_messages_py/fast
-
-# Convenience name for target.
-arm_control/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule:
-	cd /home/kaveh/Documents/Shipbot/pi/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 arm_control/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule
-.PHONY : arm_control/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule
-
-# Convenience name for target.
-std_msgs_generate_messages_cpp: arm_control/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule
-.PHONY : std_msgs_generate_messages_cpp
-
-# fast build rule for target.
-std_msgs_generate_messages_cpp/fast:
-	cd /home/kaveh/Documents/Shipbot/pi/catkin_ws/build && $(MAKE) -f arm_control/CMakeFiles/std_msgs_generate_messages_cpp.dir/build.make arm_control/CMakeFiles/std_msgs_generate_messages_cpp.dir/build
-.PHONY : std_msgs_generate_messages_cpp/fast
-
-# Convenience name for target.
-arm_control/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule:
-	cd /home/kaveh/Documents/Shipbot/pi/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 arm_control/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule
-.PHONY : arm_control/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule
-
-# Convenience name for target.
-std_msgs_generate_messages_lisp: arm_control/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule
-.PHONY : std_msgs_generate_messages_lisp
-
-# fast build rule for target.
-std_msgs_generate_messages_lisp/fast:
-	cd /home/kaveh/Documents/Shipbot/pi/catkin_ws/build && $(MAKE) -f arm_control/CMakeFiles/std_msgs_generate_messages_lisp.dir/build.make arm_control/CMakeFiles/std_msgs_generate_messages_lisp.dir/build
-.PHONY : std_msgs_generate_messages_lisp/fast
-
-# Convenience name for target.
-arm_control/CMakeFiles/std_msgs_generate_messages_py.dir/rule:
-	cd /home/kaveh/Documents/Shipbot/pi/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 arm_control/CMakeFiles/std_msgs_generate_messages_py.dir/rule
-.PHONY : arm_control/CMakeFiles/std_msgs_generate_messages_py.dir/rule
-
-# Convenience name for target.
-std_msgs_generate_messages_py: arm_control/CMakeFiles/std_msgs_generate_messages_py.dir/rule
-.PHONY : std_msgs_generate_messages_py
-
-# fast build rule for target.
-std_msgs_generate_messages_py/fast:
-	cd /home/kaveh/Documents/Shipbot/pi/catkin_ws/build && $(MAKE) -f arm_control/CMakeFiles/std_msgs_generate_messages_py.dir/build.make arm_control/CMakeFiles/std_msgs_generate_messages_py.dir/build
-.PHONY : std_msgs_generate_messages_py/fast
 
 src/arm_controller.o: src/arm_controller.cpp.o
 .PHONY : src/arm_controller.o
@@ -647,24 +479,12 @@ help:
 	@echo "... depend"
 	@echo "... arm_controller"
 	@echo "... edit_cache"
-	@echo "... geometry_msgs_generate_messages_cpp"
-	@echo "... geometry_msgs_generate_messages_lisp"
-	@echo "... geometry_msgs_generate_messages_py"
 	@echo "... hebi_cpp_files"
 	@echo "... install"
 	@echo "... install/local"
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
-	@echo "... roscpp_generate_messages_cpp"
-	@echo "... roscpp_generate_messages_lisp"
-	@echo "... roscpp_generate_messages_py"
-	@echo "... rosgraph_msgs_generate_messages_cpp"
-	@echo "... rosgraph_msgs_generate_messages_lisp"
-	@echo "... rosgraph_msgs_generate_messages_py"
-	@echo "... std_msgs_generate_messages_cpp"
-	@echo "... std_msgs_generate_messages_lisp"
-	@echo "... std_msgs_generate_messages_py"
 	@echo "... test"
 	@echo "... src/arm_controller.o"
 	@echo "... src/arm_controller.i"

@@ -277,6 +277,12 @@ arm_control_BINARY_DIR:STATIC=/home/kaveh/Documents/Shipbot/pi/catkin_ws/build/a
 //Value Computed by CMake
 arm_control_SOURCE_DIR:STATIC=/home/kaveh/Documents/Shipbot/pi/catkin_ws/src/arm_control
 
+//Value Computed by CMake
+arm_planner_BINARY_DIR:STATIC=/home/kaveh/Documents/Shipbot/pi/catkin_ws/build/arm_planner
+
+//Value Computed by CMake
+arm_planner_SOURCE_DIR:STATIC=/home/kaveh/Documents/Shipbot/pi/catkin_ws/src/arm_planner
+
 //The directory containing a CMake configuration file for catkin.
 catkin_DIR:PATH=/opt/ros/indigo/share/catkin/cmake
 
@@ -446,7 +452,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_LOCAL_GENERATORS:INTERNAL=3
+CMAKE_NUMBER_OF_LOCAL_GENERATORS:INTERNAL=4
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP

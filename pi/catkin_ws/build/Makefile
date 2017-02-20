@@ -241,6 +241,162 @@ gtest_main/fast:
 .PHONY : gtest_main/fast
 
 #=============================================================================
+# Target rules for targets named geometry_msgs_generate_messages_cpp
+
+# Build rule for target.
+geometry_msgs_generate_messages_cpp: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 geometry_msgs_generate_messages_cpp
+.PHONY : geometry_msgs_generate_messages_cpp
+
+# fast build rule for target.
+geometry_msgs_generate_messages_cpp/fast:
+	$(MAKE) -f arm_planner/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/build.make arm_planner/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/build
+.PHONY : geometry_msgs_generate_messages_cpp/fast
+
+#=============================================================================
+# Target rules for targets named geometry_msgs_generate_messages_lisp
+
+# Build rule for target.
+geometry_msgs_generate_messages_lisp: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 geometry_msgs_generate_messages_lisp
+.PHONY : geometry_msgs_generate_messages_lisp
+
+# fast build rule for target.
+geometry_msgs_generate_messages_lisp/fast:
+	$(MAKE) -f arm_planner/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/build.make arm_planner/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/build
+.PHONY : geometry_msgs_generate_messages_lisp/fast
+
+#=============================================================================
+# Target rules for targets named geometry_msgs_generate_messages_py
+
+# Build rule for target.
+geometry_msgs_generate_messages_py: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 geometry_msgs_generate_messages_py
+.PHONY : geometry_msgs_generate_messages_py
+
+# fast build rule for target.
+geometry_msgs_generate_messages_py/fast:
+	$(MAKE) -f arm_planner/CMakeFiles/geometry_msgs_generate_messages_py.dir/build.make arm_planner/CMakeFiles/geometry_msgs_generate_messages_py.dir/build
+.PHONY : geometry_msgs_generate_messages_py/fast
+
+#=============================================================================
+# Target rules for targets named roscpp_generate_messages_cpp
+
+# Build rule for target.
+roscpp_generate_messages_cpp: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 roscpp_generate_messages_cpp
+.PHONY : roscpp_generate_messages_cpp
+
+# fast build rule for target.
+roscpp_generate_messages_cpp/fast:
+	$(MAKE) -f arm_planner/CMakeFiles/roscpp_generate_messages_cpp.dir/build.make arm_planner/CMakeFiles/roscpp_generate_messages_cpp.dir/build
+.PHONY : roscpp_generate_messages_cpp/fast
+
+#=============================================================================
+# Target rules for targets named roscpp_generate_messages_lisp
+
+# Build rule for target.
+roscpp_generate_messages_lisp: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 roscpp_generate_messages_lisp
+.PHONY : roscpp_generate_messages_lisp
+
+# fast build rule for target.
+roscpp_generate_messages_lisp/fast:
+	$(MAKE) -f arm_planner/CMakeFiles/roscpp_generate_messages_lisp.dir/build.make arm_planner/CMakeFiles/roscpp_generate_messages_lisp.dir/build
+.PHONY : roscpp_generate_messages_lisp/fast
+
+#=============================================================================
+# Target rules for targets named roscpp_generate_messages_py
+
+# Build rule for target.
+roscpp_generate_messages_py: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 roscpp_generate_messages_py
+.PHONY : roscpp_generate_messages_py
+
+# fast build rule for target.
+roscpp_generate_messages_py/fast:
+	$(MAKE) -f arm_planner/CMakeFiles/roscpp_generate_messages_py.dir/build.make arm_planner/CMakeFiles/roscpp_generate_messages_py.dir/build
+.PHONY : roscpp_generate_messages_py/fast
+
+#=============================================================================
+# Target rules for targets named rosgraph_msgs_generate_messages_cpp
+
+# Build rule for target.
+rosgraph_msgs_generate_messages_cpp: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 rosgraph_msgs_generate_messages_cpp
+.PHONY : rosgraph_msgs_generate_messages_cpp
+
+# fast build rule for target.
+rosgraph_msgs_generate_messages_cpp/fast:
+	$(MAKE) -f arm_planner/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build.make arm_planner/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build
+.PHONY : rosgraph_msgs_generate_messages_cpp/fast
+
+#=============================================================================
+# Target rules for targets named rosgraph_msgs_generate_messages_lisp
+
+# Build rule for target.
+rosgraph_msgs_generate_messages_lisp: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 rosgraph_msgs_generate_messages_lisp
+.PHONY : rosgraph_msgs_generate_messages_lisp
+
+# fast build rule for target.
+rosgraph_msgs_generate_messages_lisp/fast:
+	$(MAKE) -f arm_planner/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build.make arm_planner/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build
+.PHONY : rosgraph_msgs_generate_messages_lisp/fast
+
+#=============================================================================
+# Target rules for targets named rosgraph_msgs_generate_messages_py
+
+# Build rule for target.
+rosgraph_msgs_generate_messages_py: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 rosgraph_msgs_generate_messages_py
+.PHONY : rosgraph_msgs_generate_messages_py
+
+# fast build rule for target.
+rosgraph_msgs_generate_messages_py/fast:
+	$(MAKE) -f arm_planner/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build.make arm_planner/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build
+.PHONY : rosgraph_msgs_generate_messages_py/fast
+
+#=============================================================================
+# Target rules for targets named std_msgs_generate_messages_cpp
+
+# Build rule for target.
+std_msgs_generate_messages_cpp: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 std_msgs_generate_messages_cpp
+.PHONY : std_msgs_generate_messages_cpp
+
+# fast build rule for target.
+std_msgs_generate_messages_cpp/fast:
+	$(MAKE) -f arm_planner/CMakeFiles/std_msgs_generate_messages_cpp.dir/build.make arm_planner/CMakeFiles/std_msgs_generate_messages_cpp.dir/build
+.PHONY : std_msgs_generate_messages_cpp/fast
+
+#=============================================================================
+# Target rules for targets named std_msgs_generate_messages_lisp
+
+# Build rule for target.
+std_msgs_generate_messages_lisp: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 std_msgs_generate_messages_lisp
+.PHONY : std_msgs_generate_messages_lisp
+
+# fast build rule for target.
+std_msgs_generate_messages_lisp/fast:
+	$(MAKE) -f arm_planner/CMakeFiles/std_msgs_generate_messages_lisp.dir/build.make arm_planner/CMakeFiles/std_msgs_generate_messages_lisp.dir/build
+.PHONY : std_msgs_generate_messages_lisp/fast
+
+#=============================================================================
+# Target rules for targets named std_msgs_generate_messages_py
+
+# Build rule for target.
+std_msgs_generate_messages_py: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 std_msgs_generate_messages_py
+.PHONY : std_msgs_generate_messages_py
+
+# fast build rule for target.
+std_msgs_generate_messages_py/fast:
+	$(MAKE) -f arm_planner/CMakeFiles/std_msgs_generate_messages_py.dir/build.make arm_planner/CMakeFiles/std_msgs_generate_messages_py.dir/build
+.PHONY : std_msgs_generate_messages_py/fast
+
+#=============================================================================
 # Target rules for targets named arm_controller
 
 # Build rule for target.
@@ -254,45 +410,6 @@ arm_controller/fast:
 .PHONY : arm_controller/fast
 
 #=============================================================================
-# Target rules for targets named geometry_msgs_generate_messages_cpp
-
-# Build rule for target.
-geometry_msgs_generate_messages_cpp: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 geometry_msgs_generate_messages_cpp
-.PHONY : geometry_msgs_generate_messages_cpp
-
-# fast build rule for target.
-geometry_msgs_generate_messages_cpp/fast:
-	$(MAKE) -f arm_control/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/build.make arm_control/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/build
-.PHONY : geometry_msgs_generate_messages_cpp/fast
-
-#=============================================================================
-# Target rules for targets named geometry_msgs_generate_messages_lisp
-
-# Build rule for target.
-geometry_msgs_generate_messages_lisp: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 geometry_msgs_generate_messages_lisp
-.PHONY : geometry_msgs_generate_messages_lisp
-
-# fast build rule for target.
-geometry_msgs_generate_messages_lisp/fast:
-	$(MAKE) -f arm_control/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/build.make arm_control/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/build
-.PHONY : geometry_msgs_generate_messages_lisp/fast
-
-#=============================================================================
-# Target rules for targets named geometry_msgs_generate_messages_py
-
-# Build rule for target.
-geometry_msgs_generate_messages_py: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 geometry_msgs_generate_messages_py
-.PHONY : geometry_msgs_generate_messages_py
-
-# fast build rule for target.
-geometry_msgs_generate_messages_py/fast:
-	$(MAKE) -f arm_control/CMakeFiles/geometry_msgs_generate_messages_py.dir/build.make arm_control/CMakeFiles/geometry_msgs_generate_messages_py.dir/build
-.PHONY : geometry_msgs_generate_messages_py/fast
-
-#=============================================================================
 # Target rules for targets named hebi_cpp_files
 
 # Build rule for target.
@@ -304,123 +421,6 @@ hebi_cpp_files: cmake_check_build_system
 hebi_cpp_files/fast:
 	$(MAKE) -f arm_control/CMakeFiles/hebi_cpp_files.dir/build.make arm_control/CMakeFiles/hebi_cpp_files.dir/build
 .PHONY : hebi_cpp_files/fast
-
-#=============================================================================
-# Target rules for targets named roscpp_generate_messages_cpp
-
-# Build rule for target.
-roscpp_generate_messages_cpp: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 roscpp_generate_messages_cpp
-.PHONY : roscpp_generate_messages_cpp
-
-# fast build rule for target.
-roscpp_generate_messages_cpp/fast:
-	$(MAKE) -f arm_control/CMakeFiles/roscpp_generate_messages_cpp.dir/build.make arm_control/CMakeFiles/roscpp_generate_messages_cpp.dir/build
-.PHONY : roscpp_generate_messages_cpp/fast
-
-#=============================================================================
-# Target rules for targets named roscpp_generate_messages_lisp
-
-# Build rule for target.
-roscpp_generate_messages_lisp: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 roscpp_generate_messages_lisp
-.PHONY : roscpp_generate_messages_lisp
-
-# fast build rule for target.
-roscpp_generate_messages_lisp/fast:
-	$(MAKE) -f arm_control/CMakeFiles/roscpp_generate_messages_lisp.dir/build.make arm_control/CMakeFiles/roscpp_generate_messages_lisp.dir/build
-.PHONY : roscpp_generate_messages_lisp/fast
-
-#=============================================================================
-# Target rules for targets named roscpp_generate_messages_py
-
-# Build rule for target.
-roscpp_generate_messages_py: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 roscpp_generate_messages_py
-.PHONY : roscpp_generate_messages_py
-
-# fast build rule for target.
-roscpp_generate_messages_py/fast:
-	$(MAKE) -f arm_control/CMakeFiles/roscpp_generate_messages_py.dir/build.make arm_control/CMakeFiles/roscpp_generate_messages_py.dir/build
-.PHONY : roscpp_generate_messages_py/fast
-
-#=============================================================================
-# Target rules for targets named rosgraph_msgs_generate_messages_cpp
-
-# Build rule for target.
-rosgraph_msgs_generate_messages_cpp: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 rosgraph_msgs_generate_messages_cpp
-.PHONY : rosgraph_msgs_generate_messages_cpp
-
-# fast build rule for target.
-rosgraph_msgs_generate_messages_cpp/fast:
-	$(MAKE) -f arm_control/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build.make arm_control/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build
-.PHONY : rosgraph_msgs_generate_messages_cpp/fast
-
-#=============================================================================
-# Target rules for targets named rosgraph_msgs_generate_messages_lisp
-
-# Build rule for target.
-rosgraph_msgs_generate_messages_lisp: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 rosgraph_msgs_generate_messages_lisp
-.PHONY : rosgraph_msgs_generate_messages_lisp
-
-# fast build rule for target.
-rosgraph_msgs_generate_messages_lisp/fast:
-	$(MAKE) -f arm_control/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build.make arm_control/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build
-.PHONY : rosgraph_msgs_generate_messages_lisp/fast
-
-#=============================================================================
-# Target rules for targets named rosgraph_msgs_generate_messages_py
-
-# Build rule for target.
-rosgraph_msgs_generate_messages_py: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 rosgraph_msgs_generate_messages_py
-.PHONY : rosgraph_msgs_generate_messages_py
-
-# fast build rule for target.
-rosgraph_msgs_generate_messages_py/fast:
-	$(MAKE) -f arm_control/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build.make arm_control/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build
-.PHONY : rosgraph_msgs_generate_messages_py/fast
-
-#=============================================================================
-# Target rules for targets named std_msgs_generate_messages_cpp
-
-# Build rule for target.
-std_msgs_generate_messages_cpp: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 std_msgs_generate_messages_cpp
-.PHONY : std_msgs_generate_messages_cpp
-
-# fast build rule for target.
-std_msgs_generate_messages_cpp/fast:
-	$(MAKE) -f arm_control/CMakeFiles/std_msgs_generate_messages_cpp.dir/build.make arm_control/CMakeFiles/std_msgs_generate_messages_cpp.dir/build
-.PHONY : std_msgs_generate_messages_cpp/fast
-
-#=============================================================================
-# Target rules for targets named std_msgs_generate_messages_lisp
-
-# Build rule for target.
-std_msgs_generate_messages_lisp: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 std_msgs_generate_messages_lisp
-.PHONY : std_msgs_generate_messages_lisp
-
-# fast build rule for target.
-std_msgs_generate_messages_lisp/fast:
-	$(MAKE) -f arm_control/CMakeFiles/std_msgs_generate_messages_lisp.dir/build.make arm_control/CMakeFiles/std_msgs_generate_messages_lisp.dir/build
-.PHONY : std_msgs_generate_messages_lisp/fast
-
-#=============================================================================
-# Target rules for targets named std_msgs_generate_messages_py
-
-# Build rule for target.
-std_msgs_generate_messages_py: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 std_msgs_generate_messages_py
-.PHONY : std_msgs_generate_messages_py
-
-# fast build rule for target.
-std_msgs_generate_messages_py/fast:
-	$(MAKE) -f arm_control/CMakeFiles/std_msgs_generate_messages_py.dir/build.make arm_control/CMakeFiles/std_msgs_generate_messages_py.dir/build
-.PHONY : std_msgs_generate_messages_py/fast
 
 # Help Target
 help:
@@ -442,11 +442,9 @@ help:
 	@echo "... tests"
 	@echo "... gtest"
 	@echo "... gtest_main"
-	@echo "... arm_controller"
 	@echo "... geometry_msgs_generate_messages_cpp"
 	@echo "... geometry_msgs_generate_messages_lisp"
 	@echo "... geometry_msgs_generate_messages_py"
-	@echo "... hebi_cpp_files"
 	@echo "... roscpp_generate_messages_cpp"
 	@echo "... roscpp_generate_messages_lisp"
 	@echo "... roscpp_generate_messages_py"
@@ -456,6 +454,8 @@ help:
 	@echo "... std_msgs_generate_messages_cpp"
 	@echo "... std_msgs_generate_messages_lisp"
 	@echo "... std_msgs_generate_messages_py"
+	@echo "... arm_controller"
+	@echo "... hebi_cpp_files"
 .PHONY : help
 
 

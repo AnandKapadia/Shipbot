@@ -6,6 +6,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   geometry_msgs
+  message_generation
 )
 
 find_package(Eigen3 REQUIRED)
@@ -54,11 +55,10 @@ SET (PKG_DIR ${CMAKE_BINARY_DIR}/${MAJOR_VERSION}.${MINOR_VERSION}.${CPP_VERSION
 # )
 
 ## Generate services in the 'srv' folder
-#add_service_files(
-#  FILES
-#  Service1.srv
-#  Service2.srv
-#)
+add_service_files(
+  FILES
+  arm_traj.srv
+)
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -68,11 +68,11 @@ SET (PKG_DIR ${CMAKE_BINARY_DIR}/${MAJOR_VERSION}.${MINOR_VERSION}.${CPP_VERSION
 # )
 
 ## Generate added messages and services with any dependencies listed here
-#generate_messages(
-#  DEPENDENCIES
-#  geometry_msgs
-#   std_msgs
-#)
+generate_messages(
+  DEPENDENCIES
+  geometry_msgs
+   std_msgs
+)
 
 
 
@@ -130,10 +130,20 @@ add_executable(arm_controller
   src/module.cpp
   src/group.cpp
   src/lookup.cpp
+  src/arm_kinematics.cpp
+)
+
+add_executable(arm_executive
+# hebi_listener 
+#   src/hebi_listener.cpp
+src/arm_executive.cpp
 )
 
 TARGET_LINK_LIBRARIES(arm_controller ${catkin_LIBRARIES})
 ADD_DEPENDENCIES(arm_controller ${catkin_EXPORTED_TARGETS})
+
+TARGET_LINK_LIBRARIES(arm_executive ${catkin_LIBRARIES})
+ADD_DEPENDENCIES(arm_executive ${catkin_EXPORTED_TARGETS})
 
 
 add_library(hebi_cpp_files OBJECT

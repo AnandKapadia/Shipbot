@@ -1,0 +1,188 @@
+#include <stdio.h>
+#include <chrono>
+#include <iostream>
+#include <eigen3/Eigen/Eigen>
+#include <eigen3/Eigen/Geometry>
+#include <vector>
+#include <math.h>
+#include "ros/ros.h"
+#include "geometry_msgs/Pose.h"
+#include "geometry_msgs/Twist.h"
+
+//this code will recieve position information from the camera and other external sources and use this information 
+//to plan a trajectory for arm to follow in the manipulation task 
+//at the moment I am only planning to have a basic linear interpolation as the trajectory
+//if time permits more complex trajectories involving optimization can be implemented
+
+class armPlanner{
+
+public:
+	armPlanner();
+	bool GetArmState();
+	bool Approach();   
+	bool move();
+	bool ManipulateGardenValve();
+	bool ManipulateGateValve(); 
+	bool FlipSwitch();
+	bool interpolateSegment(geometry_msgs::Pose startPose, geometry_msgs::Pose endPose,
+							vector<geometry_msgs::Pose> *poseList);
+	}
+};
+
+bool armPlanner::interpolateSegment(geometry_msgs::Pose startPose, geometry_msgs::Pose endPose,
+							vector<geometry_msgs::Pose> &poseList){
+
+	int idx = 0;
+
+	cout << "interpolate segment" << endl;
+	cout << "startPose = " << startPose << endl;
+	cout << "goalPose = " << endPose << endl;
+
+	// rotation interpolation
+	if (startPose.position.x == endPose.position.x &&
+		startPose.position.y == endPose.position.y &&
+		startPose.position.z == endPose.position.z ){
+		cout << "interpolate angular" << endl;
+
+		Eigen::Quaternion<double> qStart(startPose.orientation.w,
+			startPose.orientation.x, startPose.orientation.y, 
+			startPose.orientation.z);
+		Eigen::Quaternion<double> qend(endPose.orientation.w,
+			endPose.orientation.x, endPose.orientation.y, 
+			endPose.orientation.z);
+		Eigen::Matrix3d rotStart;
+		rotStart = qStart.matrix();
+		Eigen::Matrix3d rotEnd;
+		rotEnd = qEnd.matrix();
+
+		double a1 = atan2(rotStart(1,0), rotStart(0,0));
+		double a2 = atan2(rotEnd(1,0), rotEnd(0,0));
+		double a3 = 0;
+
+		int size = (int) round( fabs(a2-a1) / .005  ) + 1;
+		poseList.resize(size);
+		for (idx = 0; idx < size-1; idx++){
+			poseList[idx].position.x = startPose.position.x;
+			poseList[idx].position.y = startPose.position.y;
+			poseList[idx].position.z = startPose.position.z;
+			a3 = a1+(a2-a1)/size*idx;
+			
+			Eigen::Matrix3d tempRot;
+			tempRot << cos(a3), -sin(a3), 0,
+					   sin(a3), cos(a3), 0,
+					   0,	0,	1;
+			Eigen::Quaternion<double> tempQ(tempRot);
+
+			poseList[idx].orientation.x = tempQ.x();
+			poseList[idx].orientation.y = tempQ.y();
+			poseList[idx].orientation.z = tempQ.z();
+			poseList[idx].orientation.w = tempQ.w();
+
+			std::cout << poseList[idx].position.x << " \t"
+         << poseList->at(idx).position.y << " \t"
+         << poseList->at(idx).position.z << " \t"
+         << poseList->at(idx).orientation.x << " \t"
+         << poseList->at(idx).orientation.y << " \t"
+         << poseList->at(idx).orientation.z << " \t"
+         << poseList->at(idx).orientation.w << " \t" << std::endl;
+			fix_orientation(poseList->at(idx));
+			cout << "a3 = " << a3 << endl;
+			std::cout << poseList->at(idx).position.x << " \t"
+         << poseList->at(idx).position.y << " \t"
+         << poseList->at(idx).position.z << " \t"
+         << poseList->at(idx).orientation.x << " \t"
+         << poseList->at(idx).orientation.y << " \t"
+         << poseList->at(idx).orientation.z << " \t"
+         << poseList->at(idx).orientation.w << " \t" << std::endl;
+
+
+		}
+		poseList->at(idx) = goalPose;
+			std::cout << poseList->at(idx).position.x << " \t"
+         << poseList->at(idx).position.y << " \t"
+         << poseList->at(idx).position.z << " \t"
+         << poseList->at(idx).orientation.x << " \t"
+         << poseList->at(idx).orientation.y << " \t"
+         << poseList->at(idx).orientation.z << " \t"
+         << poseList->at(idx).orientation.w << " \t" << std::endl;
+		fix_orientation(poseList->at(idx));
+			std::cout << poseList->at(idx).position.x << " \t"
+         << poseList->at(idx).position.y << " \t"
+         << poseList->at(idx).position.z << " \t"
+         << poseList->at(idx).orientation.x << " \t"
+         << poseList->at(idx).orientation.y << " \t"
+         << poseList->at(idx).orientation.z << " \t"
+         << poseList->at(idx).orientation.w << " \t" << std::endl;
+		//cout << "poseList["<<idx<<"] = "<<poseList->at(idx)<<endl;
+	}
+	// translation interpolation
+	else {
+		cout << "interpolate linear" << endl;
+		double a2 = acos(goalPose.orientation.w)*2;
+		double dx = goalPose.position.x - startPose.position.x;
+		double dy = goalPose.position.y - startPose.position.y;
+		double dz = goalPose.position.z - startPose.position.z;
+		double dist = sqrt( dx*dx + dy*dy + dz*dz );
+		int size = (int) round( dist / _ds ) + 1;
+		poseList->resize(size);
+		for (idx = 0; idx < size-1; idx++){
+			poseList->at(idx).position.x = startPose.position.x + dx/size*idx;
+			poseList->at(idx).position.y = startPose.position.y + dy/size*idx;
+			poseList->at(idx).position.z = startPose.position.z + dz/size*idx;
+			poseList->at(idx).orientation.x = startPose.orientation.x;
+			poseList->at(idx).orientation.y = startPose.orientation.y;
+			poseList->at(idx).orientation.z = startPose.orientation.z;
+			poseList->at(idx).orientation.w = startPose.orientation.w;
+			// angle2quaternion(a2, &poseList->at(idx).orientation);
+			std::cout << poseList->at(idx).position.x << " \t"
+         << poseList->at(idx).position.y << " \t"
+         << poseList->at(idx).position.z << " \t"
+         << poseList->at(idx).orientation.x << " \t"
+         << poseList->at(idx).orientation.y << " \t"
+         << poseList->at(idx).orientation.z << " \t"
+         << poseList->at(idx).orientation.w << " \t" << std::endl;
+			fix_orientation(poseList->at(idx));
+			// cout << "poseList["<<idx<<"] = "<<poseList->at(idx)<<endl;
+			std::cout << poseList->at(idx).position.x << " \t"
+         << poseList->at(idx).position.y << " \t"
+         << poseList->at(idx).position.z << " \t"
+         << poseList->at(idx).orientation.x << " \t"
+         << poseList->at(idx).orientation.y << " \t"
+         << poseList->at(idx).orientation.z << " \t"
+         << poseList->at(idx).orientation.w << " \t" << std::endl;
+		}
+		poseList->at(idx) = goalPose;
+		// angle2quaternion(a2, &poseList->at(idx).orientation);
+			std::cout << poseList->at(idx).position.x << " \t"
+         << poseList->at(idx).position.y << " \t"
+         << poseList->at(idx).position.z << " \t"
+         << poseList->at(idx).orientation.x << " \t"
+         << poseList->at(idx).orientation.y << " \t"
+         << poseList->at(idx).orientation.z << " \t"
+         << poseList->at(idx).orientation.w << " \t" << std::endl;
+		fix_orientation(poseList->at(idx));
+		// cout << "poseList["<<idx<<"] = "<<poseList->at(idx)<<endl;
+			std::cout << poseList->at(idx).position.x << " \t"
+         << poseList->at(idx).position.y << " \t"
+         << poseList->at(idx).position.z << " \t"
+         << poseList->at(idx).orientation.x << " \t"
+         << poseList->at(idx).orientation.y << " \t"
+         << poseList->at(idx).orientation.z << " \t"
+         << poseList->at(idx).orientation.w << " \t" << std::endl;
+	}
+}
+
+}
+int main(int argc, char* argv[]){
+
+	ros::init(argc, argv, "arm_planner");
+
+	ros::NodeHandle nh;
+	ros::Rate loop_rate(10);
+
+	while (ros::ok()){
+
+	}
+	return 0;
+}
+

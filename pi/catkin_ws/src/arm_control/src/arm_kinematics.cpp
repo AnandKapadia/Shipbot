@@ -1,0 +1,238 @@
+
+
+#include <stdio.h>
+#include <chrono>
+#include <iostream>
+#include <eigen3/Eigen/Eigen>
+#include <eigen3/Eigen/Geometry>
+#include <vector>
+#include <math.h>
+#include "arm_kinematics.h"
+#include "geometry_msgs/Pose.h"
+
+#define PI 3.14159
+
+Eigen::Matrix4d rotationX(const double &alpha){
+	Eigen::Matrix4d rotation;
+	rotation << 1,     0.0,  		0.0    , 0.0,
+				0,   cos(alpha),-sin(alpha), 0.0,
+				0.0, sin(alpha), cos(alpha), 0.0,
+				0.0,   0.0, 	 	0.0, 	 1.0;
+	return rotation;
+}
+
+Eigen::Matrix4d rotationY(const double &alpha){
+	Eigen::Matrix4d rotation;
+	rotation << cos(alpha),      0,    sin(alpha), 0.0,
+					0, 			 1,       0.0,     0.0,
+			   -sin(alpha),      0,    cos(alpha), 0.0,
+					0.0		,   0.0, 	  0.0,     1.0;
+	return rotation;
+}
+
+Eigen::Matrix4d rotationZ(const double &alpha){
+	Eigen::Matrix4d rotation;
+	rotation << cos(alpha), -sin(alpha),  0.0, 0.0,
+				sin(alpha),  cos(alpha),  0.0, 0.0,
+					0.0		,   0.0, 	  1.0, 0.0,
+					0.0		,   0.0, 	  0.0, 1.0;
+	return rotation;
+}
+
+armKinematics::armKinematics(){
+
+	//Initialize transformation matrices using the home position of the (arms facing up)
+	Eigen::Matrix4d T1o2i, T2o3i, T3o4i, T4o5i, T5o6i;
+
+
+	//Cartesian offsets of each transformation in meters
+	x1 = 0 ;    y1 =-0.102	  ; z1 = 0.067;
+	x2 = 0;     y2 =0.321 	  ; z2 = 0;
+	x3 = 0.324; y3 = 0    	  ; z3 = 0;
+	x4 = 0.078; y4 = 0	  	  ; z4 = 0;
+	x5 = 0	  ; y5 = 0	 	  ; z5 = 0;
+
+    T1o2i << 1, 0, 0,  x1,
+      		 0, 1, 0,  y1,
+      		 0, 0, 1,  z1,
+      		 0, 0, 0,  1;
+
+    H1o2i = T1o2i*rotationX(PI/2);
+
+    T2o3i << 1, 0, 0,  x2,
+      		 0, 1, 0,  y2,
+      		 0, 0, 1,  z2,
+      		 0, 0, 0,  1;
+
+    H2o3i = T2o3i*rotationZ(PI/2)*rotationX(PI);
+
+    T3o4i << 1, 0, 0,  x3,
+      		 0, 1, 0,  y3,
+      		 0, 0, 1,  z3,
+      		 0, 0, 0,  1;
+
+    H3o4i = T3o4i*rotationX(PI);
+
+    T4o5i << 1, 0, 0,  x4,
+      		 0, 1, 0,  y4,
+      		 0, 0, 1,  z4,
+      		 0, 0, 0,  1;
+
+    H4o5i = T4o5i*rotationY(PI/2)*rotationZ(PI/2);
+
+    //set to identity until we have an end-effector  
+    T5o6i <<  1, 0, 0,  x5,
+      		 0, 1, 0,  y5,
+      		 0, 0, 1,  z5,
+     		 0, 0, 0,  1;
+
+    H5o6i = T5o6i;
+}
+
+//Function:: Calculate the forward kinematics of the arm in the lab
+geometry_msgs::Pose armKinematics::forwardKinematics(const std::vector<double> &alpha){
+	Eigen::Matrix4d g1i6 = rotationZ(alpha[0]) * H1o2i*
+						   rotationZ(alpha[1])* H2o3i*
+						   rotationZ(alpha[2])* H3o4i*
+						   rotationZ(alpha[3])* H4o5i*
+               rotationZ(alpha[4])* H5o6i;
+
+    geometry_msgs::Pose pose;
+    pose.position.x = g1i6(0,3);
+    pose.position.y = g1i6(1,3);
+    pose.position.z= g1i6(2,3);
+
+    Eigen::Matrix3d rotMat;
+    rotMat << g1i6.block(0,0,3,3);
+    Eigen::Quaternion<double> q(rotMat);
+    pose.orientation.w = q.w();
+    pose.orientation.x = q.x();
+    pose.orientation.y = q.y();
+    pose.orientation.z = q.z();
+    //std::cout << "\nEndeffector w.r.t arm base is : \n" << g1i6 << std::endl;
+
+    return pose;
+}
+
+//Function:: Calculate the Inverse Kinematics of the arm in the lab
+bool armKinematics::inverseKinematics(const geometry_msgs::Pose &pose, std::vector<double> &alpha){
+	Eigen::Quaternion<double> q(pose.orientation.w, pose.orientation.x, pose.orientation.y, pose.orientation.z);
+	Eigen::Matrix4d g1i6;
+    g1i6.setIdentity();
+    g1i6.block(0, 0, 3, 3) << q.matrix();
+    g1i6.block(0, 3, 3, 1) << pose.position.x, pose.position.y, pose.position.z;
+   std::cout << "desired end-effector pose:" << std::endl << g1i6 << std::endl;	
+
+    //Solve for base angle. Set condition that if angle is greater  that PI
+    //arm should got to negative values.
+
+    //offset to apply to radius to get actual angle 0
+    double offset_angle = asin(y1 / sqrt(g1i6(0, 3) * g1i6(0, 3) + g1i6(1, 3) *g1i6(1, 3)));
+    //std::cout << "offset angle is : " << offset_angle << std::endl;
+    alpha[0] = atan2(g1i6(1, 3), g1i6(0, 3)) + offset_angle;
+	    alpha[0] += PI;
+	    if (alpha[0] >PI){
+	    	alpha[0] = alpha[0] - 2*PI;
+	    }
+
+    //Solve for elevation and reach of 4th joint w.r.t base joint
+    Eigen::Matrix4d g4o6 = H4o5i * rotationZ(alpha[4]) * H5o6i;
+    Eigen::Matrix4d g1i4o = g1i6 * g4o6.inverse();
+    Eigen::Matrix4d g1i2i = rotationZ(alpha[0]) * H1o2i;
+    Eigen::Matrix4d g2i4o = g1i2i.inverse() * g1i4o;
+    double elevation = g2i4o(1, 3), reach = fabs(g2i4o(0, 3));
+
+
+    //std::cout << " wrist elevation is : " << elevation << std::endl;
+    //std::cout << " wrist reach is : " << reach << std::endl;
+
+    //use law of cosines to find angle 2
+    double L1 = fabs(y2); double L2 = fabs(x3);
+    double L3 = sqrt(pow(reach,2)+pow(elevation,2));
+    double cos_c = (pow(L3,2) - pow(L2,2) - pow(L1,2))/(2*L1*L2);
+    
+    //Elbow down configuration
+    alpha[2] = -acos(cos_c);
+
+    //solve for joint 2 angles
+    double beta = asin(L2 / L3 * sin(alpha[2]));
+    alpha[1] = atan2(reach,elevation) + beta;
+    
+    if (g1i6(0,2) > 0){
+    	alpha[3] =PI - alpha[1] + alpha[2]- (-PI/2 -asin(g1i6(2,2)));
+    }
+    else{
+    	alpha[3] =PI - alpha[1] + alpha[2] + (-PI/2 -asin(g1i6(2,2)));
+    } 
+
+    alpha[4] = 0; //this must change
+
+
+
+    std::cout << "Joint angles as determined from Inverse Kinematics:" << std::endl;
+    std::cout << " angle 1 is : " << alpha[0] << std::endl;
+    std::cout << " angle 2 is : " << alpha[1] << std::endl;
+	std::cout << " angle 3 is : " << alpha[2] << std::endl;  
+	std::cout << " angle 4 is : " << alpha[3] << std::endl;
+	std::cout << " angle 5 is : " << alpha[4] << std::endl; 
+
+
+	//Check to ensure joint 1 is within limits
+	if (alpha[0] >= PI || alpha[0] <= -PI) //singularity point
+	{
+		std::cout << "joint 1 falls outside safe limits" << std::endl;
+		return false;
+	}
+	//Check to ensure that the desired position is reachable
+	else if (L1 + L2 < L3)
+		{	
+		std::cout << "The desired position is outside the workspace" << std::endl;
+		return false;
+		}
+	else if(fabs(g1i6(0,3)) <.01){
+		std::cout <<"The desired position is will cause collision with base" << std::endl;
+    return false;
+	}
+	else{
+	    return true;
+	}
+}
+
+Eigen::MatrixXd armKinematics::MinimumJerkCoefficients(std::vector<double> q0,
+                                     std::vector<double> q1){
+  //set of I.C. for the M.J.T
+  std::vector<double> v0(5);
+  std::vector<double> v1(5);
+  std::vector<double> a0(5);
+  std::vector<double> a1(5);
+
+
+  v0 = {0, 0, 0, 0, 0};
+  v1 = {0, 0, 0 ,0, 0};
+  a0 = {0, 0, 0, 0, 0};
+  a1 = {0, 0, 0 ,0, 0};
+  
+  //Solve for m.j.t coefficients
+  Eigen::MatrixXd JerkMatrix(6,6);
+  Eigen::VectorXd init_conditions(6,1);
+  Eigen::MatrixXd jerk_matrix(6,5);
+
+  JerkMatrix  << -6, 6, -3, -3, -.5, .5,
+          15, -15, 8, 7, 1.5, -1,
+          -10, 10, -6, -4, -1.5, .5,
+          0, 0, 0, 0, 0.5, 0,
+          0, 0, 1, 0, 0, 0, 
+          1, 0, 0, 0, 0, 0;
+
+
+  for (uint j; j<5;j++){
+    init_conditions << q0[j], q1[j], v0[j], v1[j] , a0[j], a1[j]; //convert initial conditions to vector
+    jerk_matrix.block(0,j,6,1) = JerkMatrix*init_conditions; 
+    
+  } 
+
+  //std::cout << "coefficients of the minimum jerk trajectory are :" << std::endl << jerk_matrix << std::endl;
+  return jerk_matrix;
+}
+
+

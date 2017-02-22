@@ -16,118 +16,40 @@
 #include "hebi_util.h"
 #include "ros/ros.h"
 #include "geometry_msgs/Pose.h"
-#include "geometry_msgs/Twist.h"
+#include "arm_kinematics.h"
+#include "arm_control/arm_traj.h"
 
 #define PI 3.14159
-#define Gravity 9.81
-
-
-Eigen::Matrix4d rotationX(const double &alpha){
-	Eigen::Matrix4d rotation;
-	rotation << 1,     0.0,  		0.0    , 0.0,
-				0,   cos(alpha),-sin(alpha), 0.0,
-				0.0, sin(alpha), cos(alpha), 0.0,
-				0.0,   0.0, 	 	0.0, 	 1.0;
-	return rotation;
-}
-
-Eigen::Matrix4d rotationY(const double &alpha){
-	Eigen::Matrix4d rotation;
-	rotation << cos(alpha),      0,    sin(alpha), 0.0,
-					0, 			 1,       0.0,     0.0,
-			   -sin(alpha),      0,    cos(alpha), 0.0,
-					0.0		,   0.0, 	  0.0,     1.0;
-	return rotation;
-}
-
-Eigen::Matrix4d rotationZ(const double &alpha){
-	Eigen::Matrix4d rotation;
-	rotation << cos(alpha), -sin(alpha),  0.0, 0.0,
-				sin(alpha),  cos(alpha),  0.0, 0.0,
-					0.0		,   0.0, 	  1.0, 0.0,
-					0.0		,   0.0, 	  0.0, 1.0;
-	return rotation;
-}
-
 
 //Class: Define properties and methods that the 5-DOF arm
 //for Team D in mechatronics uses
 class armController{
 private:
-	Eigen::Matrix4d H1o2i, H2o3i, H3o4i, H4o5i, H5o6i;
 	std::vector<std::unique_ptr<hebi::Module>> vec_module;
   	std::vector<std::string> moduleAddress;
   	int numModules;
   	long timeout_ms = 20;
 
-  	double x1,x2,x3,x4,x5,x6;
-  	double y1,y2,y3,y4,y5,y6;
-  	double z1,z2,z3,z4,z5,z6;
-
 
 public:
+	armKinematics ak;
 	armController();
 	void initialize();
-	void forwardKinematics(const std::vector<double> &alpha);
-	bool inverseKinematics(const geometry_msgs::Pose &pose, std::vector<double> &alpha);
 	void sendCommand(const std::vector<double> &command);
-	bool execute(); //future implementation trajectory map
+	void sendCommand(const std::vector<double> &pos,const std::vector<double> &vel);
+	void sendCommand(const std::vector<double> &pos,const std::vector<double> &vel,const std::vector<double> &torque);
 	bool getFeedback(std::vector<double> &fbk,const int type);
+	bool execute(arm_control::arm_traj::Request &req, arm_control::arm_traj::Response &res); 
 };
 
 armController::armController(){
 
-	//Initialize transformation matrices using the home position of the (arms facing up)
-	Eigen::Matrix4d T1o2i, T2o3i, T3o4i, T4o5i, T5o6i;
-
 	numModules = 5;
 
-	//Cartesian offsets of each transformation in meters
-	x1 = 0 ;    y1 =-0.102	  ; z1 = 0.067;
-	x2 = 0;     y2 =0.321 	  ; z2 = 0;
-	x3 = 0.324; y3 = 0    	  ; z3 = 0;
-	x4 = 0.078; y4 = 0	  	  ; z4 = 0;
-	x5 = 0	  ; y5 = 0	 	  ; z5 = 0;
-
-    T1o2i << 1, 0, 0,  x1,
-      		 0, 1, 0,  y1,
-      		 0, 0, 1,  z1,
-      		 0, 0, 0,  1;
-
-    H1o2i = T1o2i*rotationX(PI/2);
-
-    T2o3i << 1, 0, 0,  x2,
-      		 0, 1, 0,  y2,
-      		 0, 0, 1,  z2,
-      		 0, 0, 0,  1;
-
-    H2o3i = T2o3i*rotationZ(PI/2)*rotationX(PI);
-
-    T3o4i << 1, 0, 0,  x3,
-      		 0, 1, 0,  y3,
-      		 0, 0, 1,  z3,
-      		 0, 0, 0,  1;
-
-    H3o4i = T3o4i*rotationX(PI);
-
-    T4o5i << 1, 0, 0,  x4,
-      		 0, 1, 0,  y4,
-      		 0, 0, 1,  z4,
-      		 0, 0, 0,  1;
-
-    H4o5i = T4o5i*rotationY(PI/2)*rotationZ(PI/2);
-
-    //set to identity until we have an end-effector  
-    T5o6i <<  1, 0, 0,  x5,
-      		 0, 1, 0,  y5,
-      		 0, 0, 1,  z5,
-     		 0, 0, 0,  1;
-
-    H5o6i = T5o6i;
 }
 void armController::initialize(){
 	vec_module.clear();
-    vec_module.resize(4);
+    vec_module.resize(5);
 
 	// Setup the lookup
 	long timeout = 4000; // Give the modules plenty of time to appear.
@@ -158,106 +80,54 @@ void armController::initialize(){
 	std::cout << (vec_module[3] ? "Found module." : "Module not found on network.") << std::endl;
 	hebi_sleep_ms(100);
 
-	//printf("Looking up module by MAC address.\n");
-	//mac.setToHexString(std::string(""));
-	//vec_module[4] = lookup.getModuleFromMac(mac, timeout);
+	printf("Looking up module by MAC address.\n");
+	mac.setToHexString(std::string("D8:80:39:9A:B8:11"));
+	vec_module[4] = lookup.getModuleFromMac(mac, timeout);
+	std::cout << (vec_module[4] ? "Found module." : "Module not found on network.") << std::endl;
+	hebi_sleep_ms(100);
 }
 
-//Function:: Calculate the forward kinematics of the arm in the lab
-void armController::forwardKinematics(const std::vector<double> &alpha){
-	Eigen::Matrix4d g1i6 = rotationZ(alpha[0]) * H1o2i*
-						   rotationZ(alpha[1])* H2o3i*
-						   rotationZ(alpha[2])* H3o4i*
-						   rotationZ(alpha[3])* H4o5i;
-
- 
-    std::cout << "\nEndeffector w.r.t arm base is : \n" << g1i6 << std::endl;
-}
-
-//Function:: Calculate the Inverse Kinematics of the arm in the lab
-bool armController::inverseKinematics(const geometry_msgs::Pose &pose, std::vector<double> &alpha){
-	Eigen::Quaternion<double> q(pose.orientation.w, pose.orientation.x, pose.orientation.y, pose.orientation.z);
-	Eigen::Matrix4d g1i6;
-    g1i6.setIdentity();
-    g1i6.block(0, 0, 3, 3) << q.matrix();
-    g1i6.block(0, 3, 3, 1) << pose.position.x, pose.position.y, pose.position.z;
-    std::cout << "desired end-effector pose:" << std::endl << g1i6 << std::endl;	
-
-    //Solve for base angle. Set condition that if angle is greater  that PI
-    //arm should got to negative values.
-
-    //offset to apply to radius to get actual angle 0
-    double offset_angle = asin(y1 / sqrt(g1i6(0, 3) * g1i6(0, 3) + g1i6(1, 3) *g1i6(1, 3)));
-    //std::cout << "offset angle is : " << offset_angle << std::endl;
-    alpha[0] = atan2(g1i6(1, 3), g1i6(0, 3)) + offset_angle;
-	    alpha[0] += PI;
-	    if (alpha[0] >PI){
-	    	alpha[0] = alpha[0] - 2*PI;
-	    }
-
-    //Solve for elevation and reach of 4th joint w.r.t base joint
-    Eigen::Matrix4d g4o6 = H4o5i * rotationZ(alpha[4]) * H5o6i;
-    Eigen::Matrix4d g1i4o = g1i6 * g4o6.inverse();
-    Eigen::Matrix4d g1i2i = rotationZ(alpha[0]) * H1o2i;
-    Eigen::Matrix4d g2i4o = g1i2i.inverse() * g1i4o;
-    double elevation = g2i4o(1, 3), reach = fabs(g2i4o(0, 3));
-
-
-    //std::cout << " wrist elevation is : " << elevation << std::endl;
-    //std::cout << " wrist reach is : " << reach << std::endl;
-
-    //use law of cosines to find angle 2
-    double L1 = fabs(y2); double L2 = fabs(x3);
-    double L3 = sqrt(pow(reach,2)+pow(elevation,2));
-    double cos_c = (pow(L3,2) - pow(L2,2) - pow(L1,2))/(2*L1*L2);
-    
-    //Elbow down configuration
-    alpha[2] = -acos(cos_c);
-
-    //solve for joint 2 angles
-    double beta = asin(L2 / L3 * sin(alpha[2]));
-    alpha[1] = atan2(reach,elevation) + beta;
-    
-    if (g1i6(0,2) > 0){
-    	alpha[3] =PI - alpha[1] + alpha[2]- (-PI/2 -asin(g1i6(2,2)));
-    }
-    else{
-    	alpha[3] =PI - alpha[1] + alpha[2] + (-PI/2 -asin(g1i6(2,2)));
-    } 
-
-    std::cout << "Joint angles as determined from Inverse Kinematics:" << std::endl;
-    std::cout << " angle 1 is : " << alpha[0] << std::endl;
-    std::cout << " angle 2 is : " << alpha[1] << std::endl;
-	std::cout << " angle 3 is : " << alpha[2] << std::endl;  
-	std::cout << " angle 4 is : " << alpha[3] << std::endl;
-	//std::cout << " angle 4 is : " << alpha[3] << std::endl; 
-
-
-	//Check to ensure joint 1 is within limits
-	if (alpha[0] >= PI || alpha[0] <= -PI) //singularity point
-	{
-		std::cout << "joint 1 falls outside safe limits" << std::endl;
-		return false;
-	}
-	//Check to ensure that the desired position is reachable
-	else if (L1 + L2 < L3)
-		{	
-		std::cout << "The desired position is outside the workspace" << std::endl;
-		return false;
-		}
-	else if(g1i6(0,3) < .01){
-		std::cout <<"The desired position is will cause collision with base" << std::endl;
-	}
-	else{
-	    return true;
-	}
-}
 void armController::sendCommand(const std::vector<double> &command){
 hebi::Command cmd;
     bool bSuccess = true;
-    for(uint j = 0; j < 4; j++){
+    for(uint j = 0; j < 5; j++){
           cmd.actuator().position().set(command[j]); 
           printf("send command to joint %d with angle %f rad \n", j, command[j]);
+          if(!vec_module[j]->sendCommandWithAcknowledgement(cmd, timeout_ms)){
+             bSuccess = false;
+            printf("Did not receive acknowledgement from %d!\n",j);
+          }
+          else{
+          //printf("Got acknowledgement.\n");
+          }
+    }
+ }
+
+void armController::sendCommand(const std::vector<double> &pos,const std::vector<double> &vel){
+	hebi::Command cmd;
+    bool bSuccess = true;
+    for(uint j = 0; j < 5; j++){
+          cmd.actuator().position().set(pos[j]);
+          cmd.actuator().velocity().set(vel[j]);  
+          printf("send command to joint %d with angle %f rad and velocity %f rad/s \n", j, pos[j], vel[j]);
+          if(!vec_module[j]->sendCommandWithAcknowledgement(cmd, timeout_ms)){
+             bSuccess = false;
+            printf("Did not receive acknowledgement from %d!\n",j);
+          }
+          else{
+          //printf("Got acknowledgement.\n");
+          }
+    }
+ }
+
+ void armController::sendCommand(const std::vector<double> &pos,const std::vector<double> &vel,const std::vector<double> &torque){
+ 	hebi::Command cmd;
+    bool bSuccess = true;
+    for(uint j = 0; j < 5; j++){
+          cmd.actuator().position().set(pos[j]);
+          cmd.actuator().velocity().set(vel[j]); 
+          cmd.actuator().velocity().set(torque[j]); 
+          printf("send command to joint %d with angle %f rad and velocity %f rad/s \n", j, pos[j], vel[j]);
           if(!vec_module[j]->sendCommandWithAcknowledgement(cmd, timeout_ms)){
              bSuccess = false;
             printf("Did not receive acknowledgement from %d!\n",j);
@@ -271,7 +141,7 @@ hebi::Command cmd;
 bool armController::getFeedback(std::vector<double> &fbk,const int type){
   	hebi::Feedback feedback;
   	bool bSuccess = true;  
-    	for (uint j = 0; j < 4; j++){
+    	for (uint j = 0; j < 5; j++){
 		  if (vec_module[j]->requestFeedback(&feedback,timeout_ms)){
   			switch (type){
   				case 1:
@@ -300,59 +170,98 @@ bool armController::getFeedback(std::vector<double> &fbk,const int type){
   	return bSuccess;
   }
 
+bool armController::execute(arm_control::arm_traj::Request &req, arm_control::arm_traj::Response &res){
+
+	std::vector<double> joint_pos(5); 		//vector of joint angles
+	std::vector<double> joint_vel(5);	//vector of joint velocities
+	std::vector<double> fbk_position(5);
+	std::vector<double> fbk_velocity(5);
+	std::vector<double> joint_pos_end(5);
+
+	getFeedback(fbk_position,1);
+
+	//assign start and end positions from executive function
+	joint_pos = fbk_position;
+	ak.inverseKinematics(req.endPose,joint_pos_end);
+
+	//get the minimum jerk coefficients for given trajectory
+	Eigen::MatrixXd J;
+	Eigen::MatrixXd J1;
+	J = ak.MinimumJerkCoefficients(joint_pos,joint_pos_end);
+
+	//start timer for minimum jerk trajectory
+	double begin = ros::Time::now().toSec();
+	double t = 0;
+
+	bool reach_goal = false;
+	while(ros::ok()){	
+		double sum = 0.0;
+		if(ak.inverseKinematics(req.endPose,joint_pos_end)){
+			for (uint j = 0; j<5;j++){
+				J1 = ak.MinimumJerkCoefficients(joint_pos,joint_pos_end);
+				//Joint angles from minimum jerk trajectory
+				joint_pos[j] = J(0,j)*pow(t,5) + J(1,j)*pow(t,4) + J(2,j)*pow(t,3) + J(3,j)*pow(t,2) +
+					   	 J(4,j)*pow(t,1) + J(5,j);
+
+				//Joint Velocity from minimum jerk trajectory
+				joint_vel[j] = 5*J(0,j)*pow(t,4) + 4*J(1,j)*pow(t,3) + 3*J(2,j)*pow(t,2) + 2*J(3,j)*pow(t,1) +
+					    	J(4,j)*pow(t,1);
+			}
+
+
+			//send joint commands
+			std::vector<double> joint_torque(5);
+			joint_torque = {0,.3,.1,.03,0};
+			sendCommand(joint_pos,joint_vel,joint_torque);
+		}
+		else{
+		std::cout << " given trajectory falls outside workspace" << std::endl;
+		res.result = 1;
+		}
+
+		getFeedback(fbk_position,1);
+		getFeedback(fbk_velocity,2);
+		for (uint j; j<5;j++){
+			sum +=fbk_velocity[j];
+		}
+
+		std::cout << "sum is : " <<sum << std::endl;
+
+		if(fabs(fbk_position[0] - joint_pos_end[0]) < .05 && 
+			fabs(fbk_position[1] - joint_pos_end[1]) < .05 && 
+	   		fabs(fbk_position[2] - joint_pos_end[2]) < .05 
+	   		 || t>1.2 && fabs(J1(0,1)) < .00001)
+
+	   		 {
+	   		getFeedback(fbk_position,1);
+	   		ak.inverseKinematics(req.endPose,joint_pos_end);
+			res.result = 0;
+			return 1;
+		}
+		double end = ros::Time::now().toSec();
+		t = (end-begin)/2;
+		std::cout << " time is : " << t << std::endl;
+	
+
+	}
+	return 0;
+}
+
 int main(int argc, char* argv[]){
 
-	std::vector<double> fbk_position(4);
-	std::vector<double> alpha(4);
-	geometry_msgs::Pose pose;
 
-	pose.orientation.w = 0;
-	pose.orientation.x = 1;
-	pose.orientation.y = 0;
-	pose.orientation.z = 0;
-	pose.position.x =  -.4600;
-	pose.position.y = -0.06;
-	pose.position.z = 0.2;
+	//initialize server
+	ros::init(argc, argv, "arm_trajectory_server");
+    ros::NodeHandle nh;
 
 
-	bool success;
-	ros::init(argc, argv, "arm_control");
-	ros::NodeHandle nh;
-	ros::Rate loop_rate(10);
-	int state = 1;
+    armController ac;
+    ac.initialize();
 
-	armController ac;
-	ac.initialize();
+    //advertise service to topic
+   	ros::ServiceServer service = nh.advertiseService("arm_control/arm_traj", &armController::execute, &ac); 
+	
+	ros::spin();
 
-	while (ros::ok()){
-
-		ac.getFeedback(fbk_position,1);
-
-		if (state >= 1 && state < 20){
-				pose.position.x =  -.4600;
-				pose.position.y = -0.06;
-				pose.position.z = 0.2;
-			success = ac.inverseKinematics(pose,alpha);
-			ac.sendCommand(alpha);
-		}
-		else if (state >= 20 && state < 40)
-		{	
-			pose.position.x =  -.4600;
-			pose.position.y = -0.06;
-			pose.position.z = .1;
-			success = ac.inverseKinematics(pose,alpha);
-			ac.sendCommand(alpha);
-		}
-		else {
-			pose.position.x = -.2;
-			pose.position.y = -.2;
-			pose.position.z = .15;
-			success = ac.inverseKinematics(pose,alpha);
-			ac.sendCommand(alpha);
-		}
-		std::cout << "state is : "<< state <<std::endl;
-		loop_rate.sleep();
-		state++;
-	}
   	return 0;
 }

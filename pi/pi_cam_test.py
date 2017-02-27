@@ -1,7 +1,8 @@
 import numpy as np
 import cv2 as cv
-
-
+from picamera.array import PiRGBArray
+from picamera import PiCamera
+import time
 
 def load_image(file_name):
 	img = cv.imread(file_name, 3)
@@ -66,7 +67,7 @@ def hough_lines(img, dispimg, thresh, minLL, maxLG):
 
 def display_image(img):
 	cv.imshow('image', img)
-	cv.waitKey(0)
+	cv.waitKey(1)
 	return;
 
 def hough_circles(img, dispimg):
@@ -124,22 +125,30 @@ def blobs():
 
 
 def main():
+	camera = PiCamera()
+
+	camera.resolution=(640, 480)
+	camera.framerate = 32
+	rawCapture = PiRGBArray(camera, size=(640, 480))
+	time.sleep(0.1)
 	# for i in range(1, 8):
 	# 	#load image
 	# 	limg = load_image("test_pics/lv_" + str(i) + ".jpg");
-	for i in range(1, 7):
+	
+#	for i in range(1, 2):
 		#load image
-		limg = load_image("test_pics/gv_" + str(i) + ".JPG");
+#		limg = load_image("test_pics/gv_" + str(i) + ".JPG");
+	for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):		
+		limg = frame.array
 		raw_img = limg.copy()
-		display_image(raw_img)
-
+		#display_image(raw_img)
 		#gaussian blur
 		raw_img = gaussian_blur(raw_img, 3)
 		#display_image(raw_img)
 
 		#color detect
-		raw_img = range_threshold_color(raw_img, 0, 30, 20, 80, 50, 125)
-		display_image(raw_img)
+		raw_img = range_threshold_color(raw_img, 0, 30, 20, 80,  50, 125)
+		#display_image(raw_img)
 
 		#grayscale
 		raw_img = grayscale(raw_img)
@@ -154,7 +163,7 @@ def main():
 
 		#threshold
 		raw_img = threshold(raw_img, 20, 255, cv.THRESH_BINARY)
-		display_image(raw_img)
+		#display_image(raw_img)
 
 		temp, contours, hierarchy = cv.findContours(raw_img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 
@@ -163,28 +172,28 @@ def main():
 		cv.drawContours(img3, contours, -1, (0,255,0), 3)
 
 		maxcnt = 0
+		foundcnt = 0
 		maxa = 0;
 		for cnt in contours:
 			x,y,w,h = cv.boundingRect(cnt)
 			if(x < 10 or y < 10):
 				continue
 			if((w*h) > maxa):
+				foundcnt = 1
 				maxa = w*h
 				maxcnt = cnt
+		if foundcnt:
+			x,y,w,h = cv.boundingRect(maxcnt)
+			cv.rectangle(img3,(x,y),(x+w,y+h),(0,0,255),2)
+			cv.rectangle(limg,(x,y),(x+w,y+h),(0,0,255),2)
+			cv.circle(limg, (x+w/2, y+h/2), 3, (255, 255, 255), thickness=5, lineType=8, shift=0) 
+			cv.circle(img3, (x+w/2, y+h/2), 3, (255, 255, 255), thickness=5, lineType=8, shift=0) 
 
-		x,y,w,h = cv.boundingRect(maxcnt)
-		cv.rectangle(img3,(x,y),(x+w,y+h),(0,0,255),2)
-		cv.rectangle(limg,(x,y),(x+w,y+h),(0,0,255),2)
-		cv.circle(limg, (x+w/2, y+h/2), 3, (255, 255, 255), thickness=5, lineType=8, shift=0) 
-		cv.circle(img3, (x+w/2, y+h/2), 3, (255, 255, 255), thickness=5, lineType=8, shift=0) 
-
-		display_image(img3)
+		#display_image(img3)
 		display_image(limg)
-
-	
-		
+		rawCapture.truncate(0)	
 	#display image
-	cv.destroyAllWindows()
+	#cv.destroyAllWindows()
 
 
 if __name__ == "__main__":

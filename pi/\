@@ -1,5 +1,6 @@
 import numpy as np
-import cv2 as cv
+import cv as cv
+import cv.cv as cv2
 
 
 
@@ -129,7 +130,7 @@ def main():
 	# 	limg = load_image("test_pics/lv_" + str(i) + ".jpg");
 	for i in range(1, 7):
 		#load image
-		limg = load_image("test_pics/gv_" + str(i) + ".JPG");
+		limg = load_image("test_pics/gv_" + str(i) + ".jpg");
 		raw_img = limg.copy()
 		display_image(raw_img)
 
@@ -153,10 +154,10 @@ def main():
 		#display_image(raw_img)
 
 		#threshold
-		raw_img = threshold(raw_img, 20, 255, cv.THRESH_BINARY)
+		raw_img = threshold(raw_img, 20, 255, cv.THRESH_BINARY_INV )
 		display_image(raw_img)
 
-		temp, contours, hierarchy = cv.findContours(raw_img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+		contours, hierarchy = cv.findContours(raw_img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 
 		img3 = cv.merge((raw_img, raw_img, raw_img))
 

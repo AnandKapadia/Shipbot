@@ -122,7 +122,19 @@ def blobs():
 	display_image(im_with_keypoints);
 	display_image(lim_with_keypoints);
 
+def hsv_thresh(img):
+	img = cv.cvtColor(img, cv.COLOR_BGR2HSV)
+	h = img[:, :, 2]
+	h = cv.inRange(h, 25, 117) #46 - 107
+	s = img[:, :, 1]
+	s = cv.inRange(s, 120, 240)#128-230
+	v = img[:, :, 0]
+	v = cv.inRange(v, 90, 125)	#102-115
+	
+	img2 = cv.merge((h,s,v))
+	display_image(img2)
 
+	return img2
 def main():
 	# for i in range(1, 8):
 	# 	#load image
@@ -138,7 +150,8 @@ def main():
 		#display_image(raw_img)
 
 		#color detect
-		raw_img = range_threshold_color(raw_img, 0, 30, 20, 80, 50, 125)
+		#raw_img = range_threshold_color(raw_img, 0, 30, 20, 80, 50, 125)
+		raw_img  = hsv_thresh(raw_img)
 		display_image(raw_img)
 
 		#grayscale
@@ -156,7 +169,8 @@ def main():
 		raw_img = threshold(raw_img, 20, 255, cv.THRESH_BINARY)
 		display_image(raw_img)
 
-		temp, contours, hierarchy = cv.findContours(raw_img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+		contours, hierarchy = cv.findContours(raw_img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+		#temp, contours, hierarchy = cv.findContours(raw_img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 
 		img3 = cv.merge((raw_img, raw_img, raw_img))
 

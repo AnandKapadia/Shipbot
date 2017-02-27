@@ -16,6 +16,25 @@ def range_threshold(img, min, max):
 	img2 = cv.inRange(img, min, max);
 	return img2
 
+def hsv_thresh(img):
+	img = cv.cvtColor(img, cv.COLOR_BGR2HSV)
+	h = img[:, :, 0]
+	h = cv.inRange(h, 100, 125) #46 - 107
+        #display_image(h)
+	#cv.waitKey(0)	
+	s = img[:, :, 1]
+	s = cv.inRange(s, 135, 215)#128-230
+	s = gaussian_blur(s, 9)
+        #display_image(s)
+	#cv.waitKey(0)	
+	v = img[:, :, 2]
+	v = cv.inRange(v, 55, 155)	#102-115
+	v = gaussian_blur(v, 9)
+        #display_image(v)
+	#cv.waitKey(0)	
+	img2 = cv.merge((h,s,v))
+	return img2
+
 def range_threshold_color(img, rmin, rmax, gmin, gmax, bmin, bmax):
 	r = img[:, :, 2]
 	r = cv.inRange(r, rmin, rmax)
@@ -68,6 +87,7 @@ def hough_lines(img, dispimg, thresh, minLL, maxLG):
 def display_image(img):
 	cv.imshow('image', img)
 	cv.waitKey(1)
+
 	return;
 
 def hough_circles(img, dispimg):
@@ -141,15 +161,18 @@ def main():
 	for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):		
 		limg = frame.array
 		raw_img = limg.copy()
+		
+		raw_img = gaussian_blur(raw_img, 5)
 		#display_image(raw_img)
-		#gaussian blur
-		raw_img = gaussian_blur(raw_img, 3)
-		#display_image(raw_img)
-
+		#cv.waitKey(0)
+		
 		#color detect
-		raw_img = range_threshold_color(raw_img, 0, 30, 20, 80,  50, 125)
+		raw_img = range_threshold_color(raw_img, 0, 40, 20, 90, 60, 135)
 		#display_image(raw_img)
+		#cv.waitKey(0)
 
+		#raw_img = hsv_thresh(raw_img)
+	
 		#grayscale
 		raw_img = grayscale(raw_img)
 		#display_image(raw_img)
@@ -157,12 +180,17 @@ def main():
 		#threshold
 		raw_img = threshold(raw_img, 254, 255, cv.THRESH_BINARY)
 		#display_image(raw_img)
-
-		raw_img = gaussian_blur(raw_img, 25)
+		#cv.waitKey(0)
 		#display_image(raw_img)
 
+		#raw_img = gaussian_blur(raw_img, 9)
+		#display_image(raw_img)
+		#cv.waitKey(0)
+
 		#threshold
-		raw_img = threshold(raw_img, 20, 255, cv.THRESH_BINARY)
+		#raw_img = threshold(raw_img, 20, 255, cv.THRESH_BINARY)
+		#display_image(raw_img)
+		#cv.waitKey(0)
 		#display_image(raw_img)
 
 		temp, contours, hierarchy = cv.findContours(raw_img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
@@ -176,7 +204,7 @@ def main():
 		maxa = 0;
 		for cnt in contours:
 			x,y,w,h = cv.boundingRect(cnt)
-			if(x < 10 or y < 10):
+			if(x < 15 or y < 15):
 				continue
 			if((w*h) > maxa):
 				foundcnt = 1

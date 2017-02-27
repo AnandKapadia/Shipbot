@@ -179,19 +179,6 @@ def main():
 
 		#threshold
 		raw_img = threshold(raw_img, 254, 255, cv.THRESH_BINARY)
-		#display_image(raw_img)
-		#cv.waitKey(0)
-		#display_image(raw_img)
-
-		#raw_img = gaussian_blur(raw_img, 9)
-		#display_image(raw_img)
-		#cv.waitKey(0)
-
-		#threshold
-		#raw_img = threshold(raw_img, 20, 255, cv.THRESH_BINARY)
-		#display_image(raw_img)
-		#cv.waitKey(0)
-		#display_image(raw_img)
 
 		temp, contours, hierarchy = cv.findContours(raw_img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 
@@ -214,9 +201,16 @@ def main():
 			x,y,w,h = cv.boundingRect(maxcnt)
 			cv.rectangle(img3,(x,y),(x+w,y+h),(0,0,255),2)
 			cv.rectangle(limg,(x,y),(x+w,y+h),(0,0,255),2)
-			cv.circle(limg, (x+w/2, y+h/2), 3, (255, 255, 255), thickness=5, lineType=8, shift=0) 
-			cv.circle(img3, (x+w/2, y+h/2), 3, (255, 255, 255), thickness=5, lineType=8, shift=0) 
-
+			mycenter_x = x + w/2
+			mycenter_y = y + h/2
+			cv.circle(limg, (mycenter_x, mycenter_y), 3, (255, 255, 255), thickness=5, lineType=8, shift=0) 
+			cv.circle(img3, (mycenter_x, mycenter_y), 3, (255, 255, 255), thickness=5, lineType=8, shift=0) 
+			center_x = 640/2
+			center_y = 480/2
+			xdiff = (float(mycenter_x - center_x)/center_x)
+			ydiff = (float(center_y - mycenter_y)/center_y)
+		        #print str(xdiff) + ", "  + str(ydiff)	
+	
 		#display_image(img3)
 		display_image(limg)
 		rawCapture.truncate(0)	

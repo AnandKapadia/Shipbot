@@ -150,7 +150,9 @@ def main():
 		#display_image(raw_img)
 
 		#color detect
-		#raw_img = range_threshold_color(raw_img, 0, 30, 20, 80, 50, 125)
+		#raw_img = range_threshold_color(raw_img, 0, 30, 20, 80, 50, 125)		
+		raw_img = range_threshold_color(raw_img, 0, 40, 20, 90, 60, 135)
+
 		raw_img  = hsv_thresh(raw_img)
 		display_image(raw_img)
 

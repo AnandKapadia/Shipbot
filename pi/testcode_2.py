@@ -37,13 +37,13 @@ def hsv_thresh(img):
 def range_threshold_color(img, rmin, rmax, gmin, gmax, bmin, bmax):
 	r = img[:, :, 2]
 	r = cv.inRange(r, rmin, rmax)
-	display_image(r)
+	#display_image(r)
 	g = img[:, :, 1]
 	g = cv.inRange(g, gmin, gmax)
-	display_image(g)
+	#display_image(g)
 	b = img[:, :, 0]
 	b = cv.inRange(b, bmin, bmax)
-	display_image(b)
+	#display_image(b)
 	img2 = cv.merge((b, g, r))
 	#display_image(img2)
 	return img2
@@ -131,8 +131,10 @@ def main():
 		raw_img = limg.copy()
 		
 		raw_img = gaussian_blur(raw_img, 5)	
-		display_image(raw_img)
+		#display_image(raw_img)
 		raw_img = range_threshold_color(raw_img, 170, 250, 60, 135, 20, 50)
+		#raw_img = range_threshold_color(raw_img, 0, 40, 20, 90, 60, 135)
+
 		display_image(raw_img)
 
 		#grayscale
@@ -140,6 +142,10 @@ def main():
 		
 		#threshold
 		raw_img = threshold(raw_img, 254, 255, cv.THRESH_BINARY)
+
+		raw_img = gaussian_blur(raw_img, 15)	
+		display_image(raw_img)
+		
 		contours, hierarchy = cv.findContours(raw_img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 		img3 = cv.merge((raw_img, raw_img, raw_img))
 		cv.drawContours(img3, contours, -1, (0,255,0), 3)
@@ -147,16 +153,56 @@ def main():
 		maxcnt = 0
 		foundcnt = 0
 		maxa = 0
+		maxcnt2 = 0
+		foundcnt2 = 0
+		maxa2 = 0
+		maxcnt3 = 0
+		foundcnt3 = 0
+		maxa3 = 0
 		for cnt in contours:
 			x,y,w,h = cv.boundingRect(cnt)
 			if(x < 15 or y < 15):
 				continue
-			if((w*h) > maxa):
+			area = w * h
+			print area
+			if(area > maxa and foundcnt2 == 1 and foundcnt3 == 1):
 				foundcnt = 1
-				maxa = w*h
+				maxa = area
 				maxcnt = cnt
+			elif(area > maxa2 and foundcnt3 == 1):
+				foundcnt2 = 1
+				maxa2 = area
+				maxcnt2 = cnt
+			elif(area > maxa3):
+				foundcnt3 = 1
+				maxa3 = area
+				maxcnt3 = cnt
 		if foundcnt:
 			x,y,w,h = cv.boundingRect(maxcnt)
+			cv.rectangle(img3,(x,y),(x+w,y+h),(0,0,255),2)
+			cv.rectangle(limg,(x,y),(x+w,y+h),(0,0,255),2)
+			mycenter_x = x + w/2
+			mycenter_y = y + h/2
+			cv.circle(limg, (mycenter_x, mycenter_y), 3, (255, 255, 255), thickness=2, lineType=8, shift=0) 
+			cv.circle(img3, (mycenter_x, mycenter_y), 3, (255, 255, 255), thickness=2, lineType=8, shift=0) 
+			center_x = 640/2
+			center_y = 480/2
+			xdiff = (float(mycenter_x - center_x)/center_x)
+			ydiff = (float(center_y - mycenter_y)/center_y)		
+		if foundcnt2:
+			x,y,w,h = cv.boundingRect(maxcnt2)
+			cv.rectangle(img3,(x,y),(x+w,y+h),(0,0,255),2)
+			cv.rectangle(limg,(x,y),(x+w,y+h),(0,0,255),2)
+			mycenter_x = x + w/2
+			mycenter_y = y + h/2
+			cv.circle(limg, (mycenter_x, mycenter_y), 3, (255, 255, 255), thickness=2, lineType=8, shift=0) 
+			cv.circle(img3, (mycenter_x, mycenter_y), 3, (255, 255, 255), thickness=2, lineType=8, shift=0) 
+			center_x = 640/2
+			center_y = 480/2
+			xdiff = (float(mycenter_x - center_x)/center_x)
+			ydiff = (float(center_y - mycenter_y)/center_y)		
+		if foundcnt3:
+			x,y,w,h = cv.boundingRect(maxcnt3)
 			cv.rectangle(img3,(x,y),(x+w,y+h),(0,0,255),2)
 			cv.rectangle(limg,(x,y),(x+w,y+h),(0,0,255),2)
 			mycenter_x = x + w/2

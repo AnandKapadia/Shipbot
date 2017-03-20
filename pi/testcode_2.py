@@ -127,13 +127,16 @@ def blobs():
 def main():
 	for i in range(1, 3):
 		#load image
+		breakerBool = True
 		limg = load_image("test_pics/br_" + str(i) + ".JPG");
 		raw_img = limg.copy()
 		
 		raw_img = gaussian_blur(raw_img, 5)	
 		#display_image(raw_img)
-		raw_img = range_threshold_color(raw_img, 170, 250, 60, 135, 20, 50)
-		#raw_img = range_threshold_color(raw_img, 0, 40, 20, 90, 60, 135)
+		if(breakerBool):
+			raw_img = range_threshold_color(raw_img, 170, 250, 60, 135, 20, 50)
+		else:
+			raw_img = range_threshold_color(raw_img, 0, 40, 20, 90, 60, 135)
 
 		display_image(raw_img)
 
@@ -143,7 +146,8 @@ def main():
 		#threshold
 		raw_img = threshold(raw_img, 254, 255, cv.THRESH_BINARY)
 
-		raw_img = gaussian_blur(raw_img, 15)	
+		if(breakerBool):
+			raw_img = gaussian_blur(raw_img, 15)	
 		display_image(raw_img)
 		
 		contours, hierarchy = cv.findContours(raw_img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
@@ -159,6 +163,10 @@ def main():
 		maxcnt3 = 0
 		foundcnt3 = 0
 		maxa3 = 0
+		if(breakerBool == False):
+			foundcnt2 = 1
+			foundcnt3 = 1
+
 		for cnt in contours:
 			x,y,w,h = cv.boundingRect(cnt)
 			if(x < 15 or y < 15):
@@ -188,31 +196,32 @@ def main():
 			center_x = 640/2
 			center_y = 480/2
 			xdiff = (float(mycenter_x - center_x)/center_x)
-			ydiff = (float(center_y - mycenter_y)/center_y)		
-		if foundcnt2:
-			x,y,w,h = cv.boundingRect(maxcnt2)
-			cv.rectangle(img3,(x,y),(x+w,y+h),(0,0,255),2)
-			cv.rectangle(limg,(x,y),(x+w,y+h),(0,0,255),2)
-			mycenter_x = x + w/2
-			mycenter_y = y + h/2
-			cv.circle(limg, (mycenter_x, mycenter_y), 3, (255, 255, 255), thickness=2, lineType=8, shift=0) 
-			cv.circle(img3, (mycenter_x, mycenter_y), 3, (255, 255, 255), thickness=2, lineType=8, shift=0) 
-			center_x = 640/2
-			center_y = 480/2
-			xdiff = (float(mycenter_x - center_x)/center_x)
-			ydiff = (float(center_y - mycenter_y)/center_y)		
-		if foundcnt3:
-			x,y,w,h = cv.boundingRect(maxcnt3)
-			cv.rectangle(img3,(x,y),(x+w,y+h),(0,0,255),2)
-			cv.rectangle(limg,(x,y),(x+w,y+h),(0,0,255),2)
-			mycenter_x = x + w/2
-			mycenter_y = y + h/2
-			cv.circle(limg, (mycenter_x, mycenter_y), 3, (255, 255, 255), thickness=2, lineType=8, shift=0) 
-			cv.circle(img3, (mycenter_x, mycenter_y), 3, (255, 255, 255), thickness=2, lineType=8, shift=0) 
-			center_x = 640/2
-			center_y = 480/2
-			xdiff = (float(mycenter_x - center_x)/center_x)
-			ydiff = (float(center_y - mycenter_y)/center_y)
+			ydiff = (float(center_y - mycenter_y)/center_y)	
+		if(breakerBool):	
+			if foundcnt2:
+				x,y,w,h = cv.boundingRect(maxcnt2)
+				cv.rectangle(img3,(x,y),(x+w,y+h),(0,0,255),2)
+				cv.rectangle(limg,(x,y),(x+w,y+h),(0,0,255),2)
+				mycenter_x = x + w/2
+				mycenter_y = y + h/2
+				cv.circle(limg, (mycenter_x, mycenter_y), 3, (255, 255, 255), thickness=2, lineType=8, shift=0) 
+				cv.circle(img3, (mycenter_x, mycenter_y), 3, (255, 255, 255), thickness=2, lineType=8, shift=0) 
+				center_x = 640/2
+				center_y = 480/2
+				xdiff = (float(mycenter_x - center_x)/center_x)
+				ydiff = (float(center_y - mycenter_y)/center_y)		
+			if foundcnt3:
+				x,y,w,h = cv.boundingRect(maxcnt3)
+				cv.rectangle(img3,(x,y),(x+w,y+h),(0,0,255),2)
+				cv.rectangle(limg,(x,y),(x+w,y+h),(0,0,255),2)
+				mycenter_x = x + w/2
+				mycenter_y = y + h/2
+				cv.circle(limg, (mycenter_x, mycenter_y), 3, (255, 255, 255), thickness=2, lineType=8, shift=0) 
+				cv.circle(img3, (mycenter_x, mycenter_y), 3, (255, 255, 255), thickness=2, lineType=8, shift=0) 
+				center_x = 640/2
+				center_y = 480/2
+				xdiff = (float(mycenter_x - center_x)/center_x)
+				ydiff = (float(center_y - mycenter_y)/center_y)
 
 		display_image(limg)
 

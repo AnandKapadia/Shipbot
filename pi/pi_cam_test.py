@@ -16,37 +16,22 @@ def range_threshold(img, min, max):
 	img2 = cv.inRange(img, min, max);
 	return img2
 
-def hsv_thresh(img):
-	img = cv.cvtColor(img, cv.COLOR_BGR2HSV)
-	h = img[:, :, 0]
-	h = cv.inRange(h, 100, 125) #46 - 107
-        #display_image(h)
-	#cv.waitKey(0)	
-	s = img[:, :, 1]
-	s = cv.inRange(s, 135, 215)#128-230
-	s = gaussian_blur(s, 9)
-        #display_image(s)
-	#cv.waitKey(0)	
-	v = img[:, :, 2]
-	v = cv.inRange(v, 55, 155)	#102-115
-	v = gaussian_blur(v, 9)
-        #display_image(v)
-	#cv.waitKey(0)	
-	img2 = cv.merge((h,s,v))
-	return img2
-
 def range_threshold_color(img, rmin, rmax, gmin, gmax, bmin, bmax):
 	r = img[:, :, 2]
 	r = cv.inRange(r, rmin, rmax)
 	#display_image(r)
+	#cv.waitKey(0)
 	g = img[:, :, 1]
 	g = cv.inRange(g, gmin, gmax)
 	#display_image(g)
+	#cv.waitKey(0)
 	b = img[:, :, 0]
 	b = cv.inRange(b, bmin, bmax)
 	#display_image(b)
+	#cv.waitKey(0)
 	img2 = cv.merge((b, g, r))
 	#display_image(img2)
+	#cv.waitKey(0)
 	return img2
 
 def grayscale(img):
@@ -65,86 +50,18 @@ def resize(img, r_tuple):
 def resize2(img, f_x, f_y):
 	img2 = cv.resize(img, (0,0), fx=f_x, fy=f_y)
 	return img2
-
-def canny(img, t1, t2):
-	img2 = cv.Canny(img,t1,t2)
-	return img2
-
-
-def hough_lines(img, dispimg, thresh, minLL, maxLG):
-	baseimg = cv.merge((img, img, img))
-	minLineLength = minLL
-	maxLineGap = maxLG
-	lines = cv.HoughLinesP(img,0.02,np.pi/500,thresh,minLineLength , maxLineGap)
-	if lines is None:
-		return dispimg, img
-	print len(lines[0])
-	for x1,y1,x2,y2 in lines[0]:
-		cv.line(dispimg,(x1,y1),(x2,y2),(0,255,0),2)
-		cv.line(baseimg,(x1,y1),(x2,y2),(0,255,0),2)
-	return dispimg, baseimg
-
 def display_image(img):
 	cv.imshow('image', img)
 	cv.waitKey(1)
 
 	return;
 
-def hough_circles(img, dispimg):
-	baseimg = cv.merge((img, img, img))
-	circles = cv.HoughCircles(img,cv2.CV_HOUGH_GRADIENT,1,20, 50,param2=30,minRadius=0,maxRadius=0)
-	if circles is None:
-		return dispimg, baseimg
-	circles = np.uint16(np.around(circles))
-	for i in circles[0,:]:
-		# draw the outer circle
-		cv.circle(baseimg,(i[0],i[1]),i[2],(0,255,0),2)
-		# draw the center of the circle
-		cv.circle(dispimg,(i[0],i[1]),2,(0,0,255),3)
-	display_image(baseimg)
-	return dispimg, baseimg
-
-def hough():
-	# #canny edge detect
-	# raw_img = canny(raw_img, 100, 100)
-	# display_image(raw_img)
-
-	# #gauss blur
-	# raw_img = gaussian_blur(raw_img, 31)
-	# display_image(raw_img)   
-
-	# #threshold
-	# raw_img = threshold(raw_img, 254, 255, cv.THRESH_BINARY)
-	# display_image(raw_img)
-	# 
-	# #hough lines
-	# raw_img, raw_img2 = hough_lines(raw_img, limg, 20, 1000, 50)
-	# #raw_img, raw_img2 = hough_circles(raw_img, limg)
-	# display_image(raw_img2)
-	# display_image(raw_img)
-	return
-
-def blobs(): 
-	#params of blob detection
-	params = cv.SimpleBlobDetector_Params()
-	params.filterByArea = True 
-	params.filterByCircularity = False
-	params.filterByConvexity = False
-	params.filterByInertia = False
-	# Set up the detector with default parameters.
-	detector = cv.SimpleBlobDetector(params)
-	 
-	# Detect blobs.
-	keypoints = detector.detect(raw_img)
-	# Draw detected blobs as red circles.
-	# cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS ensures the size of the circle corresponds to the size of blob
-	im_with_keypoints = cv.drawKeypoints(raw_img, keypoints, np.array([]), (0,0,255), cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-	lim_with_keypoints = cv.drawKeypoints(limg, keypoints, np.array([]), (0,0,255), cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-	display_image(im_with_keypoints);
-	display_image(lim_with_keypoints);
 
 
 def main():
+        
+        garden = 1
+        breaker = 0
 	camera = PiCamera()
 
 	camera.resolution=(640, 480)
@@ -158,61 +75,105 @@ def main():
 #	for i in range(1, 2):
 		#load image
 #		limg = load_image("test_pics/gv_" + str(i) + ".JPG");
+        bool_first = 0
 	for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):		
 		limg = frame.array
+		framing_offset = 50
+		limg = limg[framing_offset:640-framing_offset, 0:480]
 		raw_img = limg.copy()
 		
 		raw_img = gaussian_blur(raw_img, 5)
-		#display_image(raw_img)
-		#cv.waitKey(0)
-		
-		#color detect
-		raw_img = range_threshold_color(raw_img, 0, 40, 20, 90, 60, 135)
-		#display_image(raw_img)
-		#cv.waitKey(0)
 
-		#raw_img = hsv_thresh(raw_img)
-	
+		#color detect
+		if(breaker):
+                        raw_img = range_threshold_color(raw_img, 170, 255, 60, 135, 20, 95)
+                else:
+                        raw_img = range_threshold_color(raw_img, 0, 40, 20, 90, 75, 135)
+
 		#grayscale
+                        
 		raw_img = grayscale(raw_img)
-		#display_image(raw_img)
 
 		#threshold
 		raw_img = threshold(raw_img, 254, 255, cv.THRESH_BINARY)
-
+		
+                if(breaker):
+                        raw_img = gaussian_blur(raw_img, 15)
+                        
 		temp, contours, hierarchy = cv.findContours(raw_img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 
 		img3 = cv.merge((raw_img, raw_img, raw_img))
 
 		cv.drawContours(img3, contours, -1, (0,255,0), 3)
 
-		maxcnt = 0
+                maxcnt = 0
 		foundcnt = 0
-		maxa = 0;
-		for cnt in contours:
+		maxa = 0
+		if(breaker == 0):
+			foundcnt2 = 1
+			foundcnt3 = 1
+                for cnt in contours:
 			x,y,w,h = cv.boundingRect(cnt)
 			if(x < 15 or y < 15):
 				continue
-			if((w*h) > maxa):
+			area = w * h
+			if(area > maxa):
 				foundcnt = 1
-				maxa = w*h
+				maxa = area
 				maxcnt = cnt
-		if foundcnt:
-			x,y,w,h = cv.boundingRect(maxcnt)
-			cv.rectangle(img3,(x,y),(x+w,y+h),(0,0,255),2)
-			cv.rectangle(limg,(x,y),(x+w,y+h),(0,0,255),2)
-			mycenter_x = x + w/2
-			mycenter_y = y + h/2
-			cv.circle(limg, (mycenter_x, mycenter_y), 3, (255, 255, 255), thickness=5, lineType=8, shift=0) 
-			cv.circle(img3, (mycenter_x, mycenter_y), 3, (255, 255, 255), thickness=5, lineType=8, shift=0) 
-			center_x = 640/2
-			center_y = 480/2
-			xdiff = (float(mycenter_x - center_x)/center_x)
-			ydiff = (float(center_y - mycenter_y)/center_y)
-		        #print str(xdiff) + ", "  + str(ydiff)	
-	
+
+                if foundcnt:
+                        x,y,w,h = cv.boundingRect(maxcnt)
+                        cv.rectangle(img3,(x,y),(x+w,y+h),(0,0,255),2)
+                        cv.rectangle(limg,(x,y),(x+w,y+h),(0,0,255),2)
+                        cv.circle(limg, (x+w/2, y+h/2), 3, (255, 255, 255), thickness=5, lineType=8, shift=0) 
+                        cv.circle(img3, (x+w/2, y+h/2), 3, (255, 255, 255), thickness=5, lineType=8, shift=0) 
+
+                        temp = (min(w, h) * 1.0)/max(w, h)
+                        new_img = limg.copy()
+                        #new_img = grayscale(new_img)
+                        color_1 = 0
+                        color_2 = 0;
+                        if(x+w > 600 or x < 50 or y+h > 450 or y < 50):
+                                display_image(limg)
+                                rawCapture.truncate(0)
+                                continue
+                        print temp
+                        if(not breaker):
+                                if(garden):
+                                        print "\nType: garden"
+                                        if(temp > 0.65):
+                                                print "Orientation: facing"
+                                        else:
+                                                print "Orientation: not facing"
+                                else:			
+                                        print "\nType: linear"
+                                        if(temp > .225):
+                                                print "Orientation: facing"
+                                        else:
+                                                print "Orientation: not facing"
+
+
+                                if(not garden):
+                                        if(max(h, w) == w):
+                                                color_1 = new_img[y+h/2, x-10]
+                                                color_2 = new_img[y+h/2, x+w+10]
+                                        else: 
+                                                color_1 = new_img[y -10, x+w/2]
+                                                color_2 = new_img[y+h+10, x+w/2]
+                                        if(max(h,w) == w):
+                                                if(color_1[0] < color_2[0]):
+                                                        print "Joint to left side"
+                                                else: 
+                                                        print "Joint to right side"
+                                        else:
+                                                if(color_1[0] < color_2[0]):
+                                                        print "Joint to top side"
+                                                else: 
+                                                        print "Joint to bottom side"
 		#display_image(img3)
 		display_image(limg)
+		#cv.waitKey(0)
 		rawCapture.truncate(0)	
 	#display image
 	#cv.destroyAllWindows()

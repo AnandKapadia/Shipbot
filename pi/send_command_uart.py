@@ -164,7 +164,7 @@ def main():
 #		limg = load_image("test_pics/gv_" + str(i) + ".JPG");
 	for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):		
 		#load image
-		breakerBool = False
+		breakerBool = True
 		limg = frame.array;
 		raw_img = limg.copy()
 		
@@ -216,10 +216,14 @@ def main():
 			center_y = 480/2
 			xdiff = (float(mycenter_x - center_x)/center_x)
 			ydiff = (float(center_y - mycenter_y)/center_y)	
-			if(center_x < mycenter_x):
-				ser.write("R")
-			else:
-				ser.write("L")	
+			ser.write(str(xdiff))
+			ser.write("Z")
+			#if(center_x < mycenter_x):
+			#	ser.write("R")
+			#else:
+			#	ser.write("L")	
+		else:
+			ser.write("0Z");
 		#display_image(img3)
 		display_image(limg)
 		rawCapture.truncate(0)	
